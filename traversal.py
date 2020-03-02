@@ -44,13 +44,13 @@ directions = dict()
 #makes init request, saves the first return object to initial_room
 #    translates this request -> curl -X GET -H 'Authorization: Token 5ef1d5be3070afa793bd9dae10aa65a48e224264' -H "Content-Type: application/json" https://lambda-treasure-hunt.herokuapp.com/api/adv/init/
 api_url = "https://lambda-treasure-hunt.herokuapp.com/api/adv/"
-token = '5ef1d5be3070afa793bd9dae10aa65a48e224264'
+token = 'fa4e18d45e95555aa7e8a9cda009274fab0c316e'
 init = requests.get(f"{api_url}init/")
 headers = {'Authorization': 'Token '+token,
            'Content-Type': 'application/json'}
-response = requests.get(api_url+init, headers=headers)
-print(f"{response.json()}")
+response = requests.get(f"{api_url}init/", headers=headers)
 initial_room = response.json()
+print(f"{initial_room}")
 
 #adds that first room to the stack,
 stack = Stack()
@@ -97,7 +97,7 @@ while stack.len() > 0:
         
         #move to room and push that room to the stack
         data = {'direction':f'{exits[i]}'}
-        post = requests.post(api_url+"move/", headers=headers, data=data)
+        post = requests.post(f"{api_url}move/", headers=headers, data=data)
         
         #push the variable onto the stack
         new_room = post.json()
@@ -108,14 +108,14 @@ while stack.len() > 0:
 
         #move back
         data = {'direction':f'{opposites[i]}'}
-        post = requests.post(api_url+"move/", headers=headers, data=data)
+        post = requests.post(api_url+move, headers=headers, data=data)
 
         #wait again
         wait(rooms_dict)
 
     #move to the next room to be evaluated
     last_data = {'direction':f'{opposites[-1]}'}
-    requests.post(api_url+"move/", headers=headers, data=last_data)
+    requests.post(api_url+move, headers=headers, data=last_data)
     wait(rooms_dict)
 
 #after the while loop - write the resulting graph to a file.
