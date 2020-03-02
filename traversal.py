@@ -44,17 +44,10 @@ directions = dict()
 #makes init request, saves the first return object to initial_room
 #    translates this request -> curl -X GET -H 'Authorization: Token 5ef1d5be3070afa793bd9dae10aa65a48e224264' -H "Content-Type: application/json" https://lambda-treasure-hunt.herokuapp.com/api/adv/init/
 api_url = "https://lambda-treasure-hunt.herokuapp.com/api/adv/"
-<<<<<<< HEAD
 token = 'fa4e18d45e95555aa7e8a9cda009274fab0c316e'
 init = requests.get(f"{api_url}init/")
 headers = {'Authorization': 'Token '+token,
            'Content-Type': 'application/json'}
-=======
-token = 'c9916272fa1e2737b1850164ddf88e43280ad09c'
-headers = {'Authorization': f'Token {token}',
-           'Content-Type': 'application/json'}
-           
->>>>>>> 0fc17cddf9551aa4386cfc3a46bda4922ad06718
 response = requests.get(f"{api_url}init/", headers=headers)
 initial_room = response.json()
 print(f"{initial_room}")
@@ -103,13 +96,6 @@ while stack.len() > 0:
             opposites.append('e')
         
         #move to room and push that room to the stack
-<<<<<<< HEAD
-        data = {'direction':f'{exits[i]}'}
-        post = requests.post(f"{api_url}move/", headers=headers, data=data)
-        
-        #push the variable onto the stack
-        new_room = post.json()
-=======
         data = {'direction': "n"} 
         yet_another_room = requests.post(f"{api_url}move/", headers=headers, data=data)
         print(f"{i}")
@@ -119,7 +105,7 @@ while stack.len() > 0:
 
         #push the variable onto the stack 
         new_room = yet_another_room.json()
->>>>>>> 0fc17cddf9551aa4386cfc3a46bda4922ad06718
+        print("NEW ROOOOOOM", new_room)
         stack.push(new_room)
 
         #wait the correct amount of time to avoid incurring penalty
@@ -127,22 +113,14 @@ while stack.len() > 0:
 
         #move back
         data = {'direction':f'{opposites[i]}'}
-<<<<<<< HEAD
-        post = requests.post(api_url+move, headers=headers, data=data)
-=======
         post = requests.post(f"{api_url}move/", headers=headers, data=data)
->>>>>>> 0fc17cddf9551aa4386cfc3a46bda4922ad06718
 
         #wait again
         wait(rooms_dict)
 
     #move to the next room to be evaluated
     last_data = {'direction':f'{opposites[-1]}'}
-<<<<<<< HEAD
-    requests.post(api_url+move, headers=headers, data=last_data)
-=======
     requests.post(f"{api_url}move/", headers=headers, data=last_data)
->>>>>>> 0fc17cddf9551aa4386cfc3a46bda4922ad06718
     wait(rooms_dict)
 
 #after the while loop - write the resulting graph to a file.
