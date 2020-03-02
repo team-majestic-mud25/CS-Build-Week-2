@@ -1,4 +1,5 @@
 import requests
+import json
 import time
 from stack import Stack
 
@@ -41,6 +42,19 @@ rooms_dict = dict()
 #               10: {'n':'?', 's':'0', 'e':'?', 'w':'?'},}
 directions = dict()
 
+#waits the correct number of seconds before making the next call.
+def wait(current_dict):
+    movement_message = None
+    #splits the second message in the messages list into a list of words
+    #if the bonus is present it will be ["Wise", "explorer", etc]
+    if len(current_dict[previous_room]['messages']) >= 1:
+        movement_message = current_dict[previous_room]['messages'][1].split()
+    #evaluates first word to see if "Wise"
+    if movement_message and movement_message[0] == "Wise":
+        time.sleep(current_dict[previous_room]['cooldown']/2 + 10) #takes advantage of bonus
+    else:
+        time.sleep(current_dict[previous_room]['cooldown'] + 10) #standard cooldown
+
 #makes init request, saves the first return object to initial_room
 #    translates this request -> curl -X GET -H 'Authorization: Token 5ef1d5be3070afa793bd9dae10aa65a48e224264' -H "Content-Type: application/json" https://lambda-treasure-hunt.herokuapp.com/api/adv/init/
 api_url = "https://lambda-treasure-hunt.herokuapp.com/api/adv/"
@@ -48,9 +62,10 @@ token = 'c9916272fa1e2737b1850164ddf88e43280ad09c'
 headers = {'Authorization': f'Token {token}',
            'Content-Type': 'application/json'}
            
-response = requests.get(f"{api_url}init/", headers=headers)
+response = requests.get(url=f"{api_url}init/", headers=headers)
 initial_room = response.json()
 print(f"{initial_room}")
+
 
 #adds that first room to the stack,
 stack = Stack()
@@ -79,6 +94,7 @@ while stack.len() > 0:
         
     previous_room = current_room['room_id'] #adjusting for the next loop
     rooms_dict[previous_room] = current_room #cache the room data
+    print(f"ROOMS: {rooms_dict}")
 
     #adds all the adjacent rooms to the stack
     exits = rooms_dict[previous_room]['exits']
@@ -94,26 +110,31 @@ while stack.len() > 0:
             opposites.append('w')
         elif exits[i] == "w":
             opposites.append('e')
-        
+        print(f"exits: {exits}")
+        print(f"opposites: {opposites}")
+
         #move to room and push that room to the stack
-        data = {'direction': "n"} 
-        yet_another_room = requests.post(f"{api_url}move/", headers=headers, data=data)
+        payload = {f'direction': f'{exits[i]}'} 
+        print(f"{payload}")
+
+        time.sleep(15)
+        yet_another_room = requests.post(url=f"{api_url}move/", headers=headers, json=payload)
         print(f"{i}")
-        print(f"{yet_another_room.status_code}")
-        print(f"{yet_another_room.reason}")
+        print(f"{yet_another_room.status_code} {yet_another_room.reason} \n {yet_another_room.json()}")
         # print(f"{yet_another_room.text}")
 
         #push the variable onto the stack 
         new_room = yet_another_room.json()
+        print(f"NEW ROOM: \n {new_room}")
         stack.push(new_room)
 
         #wait the correct amount of time to avoid incurring penalty
         wait(rooms_dict)
 
         #move back
-        data = {'direction':f'{opposites[i]}'}
-        post = requests.post(f"{api_url}move/", headers=headers, data=data)
-
+        payload = {'direction':f'{opposites[i]}'}
+        post = requests.post(f"{api_url}move/", headers=headers, data=payload)
+        
         #wait again
         wait(rooms_dict)
 
@@ -126,13 +147,3 @@ while stack.len() > 0:
 with open("graph.txt", 'wb') as fd:
     fd.write(str(rooms_dict) + "\n" + directions)
 
-#waits the correct number of seconds before making the next call.
-def wait(current_dict):
-    #splits the second message in the messages list into a list of words
-    #if the bonus is present it will be ["Wise", "explorer", etc]
-    movement_message = current_dict[previous_room].messages[1].split()
-    #evaluates first word to see if "Wise"
-    if movement_message[0] and movement_message[0] == "Wise":
-        time.sleep(current_dict[previous_room].cooldown/2) #takes advantage of bonus
-    else:
-        time.sleep(current_dict[previous_room].cooldown) #standard cooldown
