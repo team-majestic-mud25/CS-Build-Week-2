@@ -45,7 +45,7 @@ directions = dict()
 #    translates this request -> curl -X GET -H 'Authorization: Token 5ef1d5be3070afa793bd9dae10aa65a48e224264' -H "Content-Type: application/json" https://lambda-treasure-hunt.herokuapp.com/api/adv/init/
 api_url = "https://lambda-treasure-hunt.herokuapp.com/api/adv/"
 token = '5ef1d5be3070afa793bd9dae10aa65a48e224264'
-init = requests.get(api_url+"init/")
+init = requests.get(f"{api_url}init/")
 headers = {'Authorization': 'Token '+token,
            'Content-Type': 'application/json'}
 response = requests.get(api_url+init, headers=headers)
