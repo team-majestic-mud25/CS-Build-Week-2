@@ -42,6 +42,8 @@ rooms_dict = dict()
 #               10: {'n':'?', 's':'0', 'e':'?', 'w':'?'},}
 directions = dict()
 
+visited = set()
+
 #waits the correct number of seconds before making the next call.
 def wait(current_dict):
     movement_message = None
@@ -64,7 +66,8 @@ headers = {'Authorization': f'Token {token}',
            
 response = requests.get(url=f"{api_url}init/", headers=headers)
 initial_room = response.json()
-print(f"{initial_room}")
+visited.add(initial_room['room_id'])
+print(f"this is the identifier on line 70 -> initial room = {initial_room}")
 
 
 #adds that first room to the stack,
@@ -76,6 +79,7 @@ previous_room = None
 while stack.len() > 0:
     #pop a room off the stack, 
     current_room = stack.pop()
+    print(f"CURRENT ROOOOOOOOMMMMMMMMM {current_room}")
     #if previous room is not None:
     if previous_room != None:
     #   evaluate messages[0] within the rooms_dict[previous_room]->
@@ -93,6 +97,10 @@ while stack.len() > 0:
           directions["previous_room"]['e'] = previous_room.room_id
         
     previous_room = current_room['room_id'] #adjusting for the next loop
+
+    if previous_room not in visited:#check if we've added this to the visited set
+        visited.add(previous_room['room_id'])
+    
     rooms_dict[previous_room] = current_room #cache the room data
     print(f"ROOMS: {rooms_dict}")
 
@@ -101,6 +109,7 @@ while stack.len() > 0:
     opposites = []
 
     for i in range(len(exits)):
+
         #generate opposites
         if exits[i] == "s":
             opposites.append("n")
@@ -116,8 +125,8 @@ while stack.len() > 0:
         #move to room and push that room to the stack
         payload = {f'direction': f'{exits[i]}'} 
         print(f"{payload}")
-
-        time.sleep(15)
+        
+        time.sleep(1)
         yet_another_room = requests.post(url=f"{api_url}move/", headers=headers, json=payload)
         print(f"{i}")
         print(f"{yet_another_room.status_code} {yet_another_room.reason} \n {yet_another_room.json()}")
@@ -125,22 +134,38 @@ while stack.len() > 0:
 
         #push the variable onto the stack 
         new_room = yet_another_room.json()
-        print(f"NEW ROOM: \n {new_room}")
-        stack.push(new_room)
+        room_num = new_room["room_id"]
+
+        print(f"IDENTIFIER******************************\n{rooms_dict}")
+        print(f"NEW MUTHA FUCKIN ROOOOOOOOOOM \n {new_room}")
+        print(f"{room_num}")
+        
+        if rooms_dict[room_num] not in visited:
+            rooms_dict[room_num]["room_id"] = new_room
+            visited.add(new_room)
+
+        # print(f"HECK {new_room}")
+        # print("HECKIN HECK, ", rooms_dict[room_id])
+        
+        if new_room == rooms_dict[room_num]:
+            continue
+        else:
+            print(f"NEW ROOM: \n {new_room}")
+            stack.push(new_room)
 
         #wait the correct amount of time to avoid incurring penalty
         wait(rooms_dict)
 
         #move back
         payload = {'direction':f'{opposites[i]}'}
-        post = requests.post(f"{api_url}move/", headers=headers, data=payload)
+        post = requests.post(f"{api_url}move/", headers=headers, json=payload)
         
         #wait again
         wait(rooms_dict)
 
     #move to the next room to be evaluated
     last_data = {'direction':f'{opposites[-1]}'}
-    requests.post(f"{api_url}move/", headers=headers, data=last_data)
+    requests.post(f"{api_url}move/", headers=headers, json=last_data)
     wait(rooms_dict)
 
 #after the while loop - write the resulting graph to a file.
