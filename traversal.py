@@ -1,4 +1,5 @@
 import requests
+import json
 import time
 import json
 from stack import Stack
@@ -44,18 +45,16 @@ directions = dict()
 
 #waits the correct number of seconds before making the next call.
 def wait(current_dict):
+    movement_message = None
     #splits the second message in the messages list into a list of words
     #if the bonus is present it will be ["Wise", "explorer", etc]
-    movement_message=None
-    if len(current_dict[previous_room]["messages"]) >=1:
-        movement_message = current_dict[previous_room]["messages"][1].split()
-        #evaluates first word to see if "Wise"
+    if len(current_dict[previous_room]['messages']) >= 1:
+        movement_message = current_dict[previous_room]['messages'][1].split()
+    #evaluates first word to see if "Wise"
     if movement_message and movement_message[0] == "Wise":
-        print("WISE HIT!!")
-        time.sleep(current_dict[previous_room]["cooldown"]/2) #takes advantage of bonus
+        time.sleep(current_dict[previous_room]['cooldown']/2 + 10) #takes advantage of bonus
     else:
-        time.sleep(current_dict[previous_room]["cooldown"]) #standard cooldown
-        print("COOL DOWN TIME", current_dict[previous_room]["cooldown"])
+        time.sleep(current_dict[previous_room]['cooldown'] + 10) #standard cooldown
 
 #makes init request, saves the first return object to initial_room
 #    translates this request -> curl -X GET -H 'Authorization: Token 5ef1d5be3070afa793bd9dae10aa65a48e224264' -H "Content-Type: application/json" https://lambda-treasure-hunt.herokuapp.com/api/adv/init/
@@ -64,9 +63,11 @@ token = 'fa4e18d45e95555aa7e8a9cda009274fab0c316e'
 init = requests.get(f"{api_url}init/")
 headers = {'Authorization': 'Token '+token,
            'Content-Type': 'application/json'}
-response = requests.get(f"{api_url}init/", headers=headers)
+           
+response = requests.get(url=f"{api_url}init/", headers=headers)
 initial_room = response.json()
 print(f"{initial_room}")
+
 
 #adds that first room to the stack,
 stack = Stack()
@@ -77,6 +78,8 @@ previous_room = None
 while stack.len() > 0:
     #pop a room off the stack, 
     current_room = stack.pop()
+    print("CURRENT ROOM", current_room)
+    print("STACK", stack.len())
     #if previous room is not None:
     if previous_room != None:
     #   evaluate messages[0] within the rooms_dict[previous_room]->
@@ -95,6 +98,7 @@ while stack.len() > 0:
         
     previous_room = current_room['room_id'] #adjusting for the next loop
     rooms_dict[previous_room] = current_room #cache the room data
+    print(f"ROOMS: {rooms_dict}")
 
     #adds all the adjacent rooms to the stack
     exits = rooms_dict[previous_room]['exits']
@@ -114,33 +118,31 @@ while stack.len() > 0:
             opposites.append('w')
         elif exits[i] == "w":
             opposites.append('e')
-        
+        print(f"exits: {exits}")
+        print(f"opposites: {opposites}")
+
         #move to room and push that room to the stack
-        data = {'direction': f"{exits[i]}"}
-        print("data 1 line 104", data)
-        print("HEADERS", headers)
-        # cat=str(data) #CONVERTING TO A STRING, UNSURE IF WE NEED THIS
-        yet_another_room=requests.post(f"{api_url}move/", headers=headers, data=json.dumps(data))
-        print(f"THIS IS THE URL, {api_url}move/")
-        print(f"IIIIIII, {exits[i]}")
-        print("DATADATADATATATATATAAT", json.dumps(data))
-        print(f"STATUS CODE, {yet_another_room.status_code}")
-        print(f"REASON FOR CODE, {yet_another_room.reason}")
-        print(f"YET ANOTHER ROOM, {yet_another_room}")
+        payload = {f'direction': f'{exits[i]}'} 
+        print(f"{payload}")
+
+        time.sleep(15)
+        yet_another_room = requests.post(url=f"{api_url}move/", headers=headers, json=payload)
+        print(f"{i}")
+        print(f"{yet_another_room.status_code} {yet_another_room.reason} \n {yet_another_room.json()}")
+        # print(f"{yet_another_room.text}")
 
         #push the variable onto the stack 
         new_room = yet_another_room.json()
-        print("NEW ROOOOOOM", new_room)
+        print(f"NEW ROOM: \n {new_room}")
         stack.push(new_room)
 
         #wait the correct amount of time to avoid incurring penalty
         wait(rooms_dict)
 
         #move back
-        data = {'direction':f'{opposites[i]}'}
-        print("DATA2 line 120", data)
-        post = requests.post(f"{api_url}move/", headers=headers, data=data)
-
+        payload = {'direction':f'{opposites[i]}'}
+        post = requests.post(f"{api_url}move/", headers=headers, data=payload)
+        
         #wait again
         wait(rooms_dict)
 
