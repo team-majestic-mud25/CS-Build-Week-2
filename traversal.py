@@ -81,12 +81,7 @@ previous_room = None
 while stack.len() > 0:
     #pop a room off the stack, 
     current_room = stack.pop()
-<<<<<<< HEAD
-    print("CURRENT ROOM", current_room)
-    print("STACK", stack.len())
-=======
     print(f"CURRENT ROOOOOOOOMMMMMMMMM {current_room}")
->>>>>>> b5a81b7ebcfd592ad7a832f7a2b11fc804d792c0
     #if previous room is not None:
     if previous_room != None:
     #   evaluate messages[0] within the rooms_dict[previous_room]->
@@ -116,14 +111,8 @@ while stack.len() > 0:
     print("EXITSSSS", exits)
     opposites = []
 
-<<<<<<< HEAD
-    exit_length=(len(exits))
-    for i in range(exit_length):
-        print("exits",exits[i])
-=======
     for i in range(len(exits)):
 
->>>>>>> b5a81b7ebcfd592ad7a832f7a2b11fc804d792c0
         #generate opposites
         if exits[i] == "s":
             opposites.append("n")
