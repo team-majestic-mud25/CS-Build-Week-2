@@ -174,7 +174,7 @@ while len(stack) > 0:
 
 #after the while loop - write the resulting graph to a file.
 with open("graph.txt", mode='r+') as fd:
-    fd.write(directions)
+    fd.write(str(directions))
 
 with open("rooms.txt", mode="r+") as rm:
     rm.write(str(rooms_dict))
