@@ -68,8 +68,9 @@ headers = {'Authorization': 'Token '+token,
            
 response = requests.get(url=f"{api_url}init/", headers=headers)
 initial_room = response.json()
-visited.add(initial_room['room_id'])
-print(f"this is the identifier on line 70 -> initial room = {initial_room}")
+print("INITIAL ROOM", initial_room["room_id"])
+visited.add(initial_room['room_id']) #ADDS ROOM ID TO THE VISITED DICT
+print("VISITED", visited)
 
 
 #adds that first room to the stack,
@@ -84,21 +85,26 @@ while stack.len() > 0:
     print(f"CURRENT ROOOOOOOOMMMMMMMMM {current_room}")
     #if previous room is not None:
     if previous_room != None:
-    #   evaluate messages[0] within the rooms_dict[previous_room]->
+    #   if it's not our first move evaluate messages[0] within the rooms_dict[previous_room]->
         movement_message = rooms_dict[previous_room].messages[0]
           #split the string, grab the last index, that should match "north", "south", "east", or "west"
         d = movement_message.split(" ")
         move = d[-1]
         if move == "north":
           directions["previous_room"]['n'] = previous_room.room_id
+          print("PREV ROOM IN IF STATEMENT", previous_room)
         elif move == "south":
           directions["previous_room"]['s'] = previous_room.room_id
+          print("PREV ROOM IN IF STATEMENT", previous_room)
         elif move == "west":
           directions["previous_room"]['w'] = previous_room.room_id
+          print("PREV ROOM IN IF STATEMENT", previous_room)
         elif move == "east":
           directions["previous_room"]['e'] = previous_room.room_id
-        
+          print("PREV ROOM IN IF STATEMENT", previous_room)
+
     previous_room = current_room['room_id'] #adjusting for the next loop
+    print("PREVROOM.ROOMID", previous_room)
 
     if previous_room not in visited:#check if we've added this to the visited set
         visited.add(previous_room['room_id'])
@@ -138,13 +144,16 @@ while stack.len() > 0:
 
         #push the variable onto the stack 
         new_room = yet_another_room.json()
-        room_num = new_room["room_id"]
+        room_num = str(new_room["room_id"])
 
         print(f"IDENTIFIER******************************\n{rooms_dict}")
         print(f"NEW MUTHA FUCKIN ROOOOOOOOOOM \n {new_room}")
-        print(f"{room_num}")
-        
+        print(f"ROOM NUM, {room_num}")
+        print("rooms dict",rooms_dict)
+        print("room num", rooms_dict.keys[{room_num}])
+
         if rooms_dict[room_num] not in visited:
+            print({room_num}, "NOT IN VISITED")
             rooms_dict[room_num]["room_id"] = new_room
             visited.add(new_room)
 
