@@ -86,18 +86,23 @@ while stack.len() > 0:
     #if previous room is not None:
     if previous_room != None:
     #   if it's not our first move evaluate messages[0] within the rooms_dict[previous_room]->
+        print("PRINTING", rooms_dict[previous_room])
         movement_message = rooms_dict[previous_room].messages[0]
+        print
           #split the string, grab the last index, that should match "north", "south", "east", or "west"
         d = movement_message.split(" ")
-        move = d[-1]
-        if move == "north":
-          directions["previous_room"]['n'] = previous_room
-        elif move == "south":
-          directions["previous_room"]['s'] = previous_room
-        elif move == "west":
-          directions["previous_room"]['w'] = previous_room
-        elif move == "east":
-          directions["previous_room"]['e'] = previous_room
+        if (d[-1]):
+            move = d[-1]
+            if move == "north":
+                directions["previous_room"]['n'] = previous_room
+            elif move == "south":
+                directions["previous_room"]['s'] = previous_room
+            elif move == "west":
+                directions["previous_room"]['w'] = previous_room
+            elif move == "east":
+                directions["previous_room"]['e'] = previous_room
+        else:
+            print("NO MESSAGES HERE, TRY AGAIN")
         
     previous_room = current_room['room_id'] #adjusting value for the next loop
 
@@ -169,4 +174,4 @@ while stack.len() > 0:
 
 #after the while loop - write the resulting graph to a file.
 with open("graph.txt", 'wb') as fd:
-    fd.write(str(rooms_dict) + "\n" + directions)
+    fd.write(f"{rooms_dict}" + "\n" + f"{directions}")
