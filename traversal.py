@@ -1,7 +1,6 @@
 import requests
 import json
 import time
-from stack import Stack
 
 # what the response from the server looks like.
 # rooms_dict = {
@@ -40,7 +39,7 @@ headers = {'Authorization': f'Token {token}',
            'Content-Type': 'application/json'}
            
 response = requests.get(url=f"{api_url}init/", headers=headers)
-initial_room = response.json()
+initial_room = response.json() 
 visited.add(initial_room['room_id'])
 
 # adds that first room to the stack,
@@ -54,8 +53,9 @@ last_move_opposite = None
 
 while len(stack) > 0:
     #pop a room off the stack, 
-    current_room = stack.pop() 
-    print(f"\n CURRENT ROOM - top of the while loop \n {current_room} \n")
+    current_room = stack.pop()
+
+    print(f"\n CURRENT ROOM - top of the while loop \n {current_room} \n THE STACK BRUH: {stack}")
     print(f"{visited}")
 
     #if previous room is not None:
@@ -109,7 +109,7 @@ while len(stack) > 0:
         elif exits[i] == "e":
             opposites.append('w')
         elif exits[i] == "w":
-            opposites.append('e')
+            opposites.append('e') 
         print(f"current_id: {previous_room}")
         print(f"exits: {exits}")
         print(f"opposites: {opposites}\n")
@@ -177,4 +177,5 @@ with open("graph.txt", mode='r+') as fd:
     fd.write(str(directions))
 
 with open("rooms.txt", mode="r+") as rm:
-    rm.write(str(rooms_dict))
+    for i in rooms_dict:
+        rm.write(f"{rooms_dict[i]} \n")
