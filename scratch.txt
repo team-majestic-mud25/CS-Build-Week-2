@@ -1,0 +1,37 @@
+ {
+ 213: {'room_id': 213, 'title': 'A misty room', 'description': 'You are standing on grass and surrounded by a dense mist. You can barely make out the exits in any direction.', 'coordinates': '(53,55)', 'elevation': 0, 'terrain': 'NORMAL', 'players': [], 'items': ['amazing treasure'], 'exits': ['e', 'w'], 'cooldown': 15.0, 'errors': [], 'messages': ['You have walked east.']}, 
+ 179: {'room_id': 179, 'title': 'A misty room', 'description': 'You are standing on grass and surrounded by a dense mist. You can barely make out the exits in any direction.', 'coordinates': '(54,55)', 'elevation': 0, 'terrain': 'NORMAL', 'players': [], 'items': [], 'exits': ['s', 'e', 'w'], 'cooldown': 15.0, 'errors': [], 'messages': ['You have walked east.']}, 
+ 420: {'room_id': 420, 'title': 'A misty room', 'description': 'You are standing on grass and surrounded by a dense mist. You can barely make out the exits in any direction.', 'coordinates': '(52,55)', 'elevation': 0, 'terrain': 'NORMAL', 'players': ['[treasure_hunter_x0x]'], 'items': [], 'exits': ['s', 'e', 'w'], 'cooldown': 7.5, 'errors': [], 'messages': ['You have walked east.', 'Wise Explorer: -50% CD']}, 
+ 444: {'room_id': 444, 'title': 'A misty room', 'description': 'You are standing on grass and surrounded by a dense mist. You can barely make out the exits in any direction.', 'coordinates': '(52,54)', 'elevation': 0, 'terrain': 'NORMAL', 'players': [], 'items': [], 'exits': ['n', 'w'], 'cooldown': 15.0, 'errors': [], 'messages': ['You have walked south.']}, 
+ 437: {'room_id': 437, 'title': 'A misty room', 'description': 'You are standing on grass and surrounded by a dense mist. You can barely make out the exits in any direction.', 'coordinates': '(51,55)', 'elevation': 0, 'terrain': 'NORMAL', 'players': [], 'items': [], 'exits': ['e', 'w'], 'cooldown': 15.0, 'errors': [], 'messages': ['You have walked west.']}, 
+ 497: {'room_id': 497, 'title': 'A misty room', 'description': 'You are standing on grass and surrounded by a dense mist. You can barely make out the exits in any direction.', 'coordinates': '(50,55)', 'elevation': 0, 'terrain': 'NORMAL', 'players': [], 'items': ['great treasure', 'great treasure'], 'exits': ['e'], 'cooldown': 15.0, 'errors': [], 'messages': ['You have walked west.']},
+ 233: {'room_id': 233, 'title': 'A misty room', 'description': 'You are standing on grass and surrounded by a dense mist. You can barely make out the exits in any direction.', 'coordinates': '(54,54)', 'elevation': 0, 'terrain': 'NORMAL', 'players': ['SNH'], 'items': ['amazing treasure'], 'exits': ['n', 'w'], 'cooldown': 7.5, 'errors': [], 'messages': ['You have walked south.', 'Wise Explorer: -50% CD']},
+ 238: {'room_id': 238, 'title': 'A misty room', 'description': 'You are standing on grass and surrounded by a dense mist. You can barely make out the exits in any direction.', 'coordinates': '(53,54)', 'elevation': 0, 'terrain': 'NORMAL', 'players': [], 'items': ['great treasure', 'great treasure', 'amazing treasure', 'amazing treasure'], 'exits': ['e'], 'cooldown': 15.0, 'errors': [], 'messages': ['You have walked west.']},
+ 175: {'room_id': 175, 'title': 'A misty room', 'description': 'You are standing on grass and surrounded by a dense mist. You can barely make out the exits in any direction.', 'coordinates': '(55,55)', 'elevation': 0, 'terrain': 'NORMAL', 'players': [], 'items': [], 'exits': ['s', 'e', 'w'], 'cooldown': 15.0, 'errors': [], 'messages': ['You have walked east.']},
+ }
+
+ {
+    213: {'e': 179, 'w': 420}, 
+    179: {'w': 213, 's': 233, 'e': 175}, 
+    420: {'e': 213, 's': 444, 'w': 437}, 
+    444: {'n': 420}, 
+    437: {'e': 420, 'w': 497}, 
+    497: {'e': 437}, 
+    233: {'n': 179}, 
+    175: {'w': 179}
+    }
+
+directions = {
+    213: {'e': 179, 'w': 420}, 
+    179: {'w': 213, 's': 233, 'e': 175}, 
+    420: {'e': 213, 's': 444, 'w': 437}, 
+    444: {'n': 420}, 
+    437: {'e': 420, 'w': 497}, 
+    497: {'e': 437}, 
+    233: {'n': 179, 'w': 238}, 
+    175: {'w': 179}, 
+    238: {'e': 233},
+}
+
+
+visited: {420, 233, 238, 497, 179, 213, 437}
