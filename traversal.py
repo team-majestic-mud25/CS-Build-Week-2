@@ -21,8 +21,7 @@ import time
 rooms_dict = dict()
 
 # dictionary that contains dictionaries of each available cardinal direction, key is room number.
-# ex directions = {0: {'n':'10', 's':'?', 'e':'?', 'w':'?'}, 
-#               10: {'n':'?', 's':'0', 'e':'?', 'w':'?'},}
+# ex directions = {0: {'n':'10', 's':'?', 'e':'?', 'w':'?'}, 10: {'n':'?', 's':'0', 'e':'?', 'w':'?'},}
 directions = dict()
 
 # tracks if we've stepped foot in a room.
@@ -39,6 +38,7 @@ headers = {'Authorization': f'Token {token}',
            'Content-Type': 'application/json'}
            
 response = requests.get(url=f"{api_url}init/", headers=headers)
+
 initial_room = response.json() 
 visited.add(initial_room['room_id'])
 
@@ -161,11 +161,13 @@ while len(stack) > 0:
         visited.add(next_room["room_id"])
         print_var = next_room["room_id"]
         print(f"added room {print_var} to visited \nvisited: {visited}\n")
+        
         #move back to initial/current_room (the one popped off the stack)
         data = {'direction':f'{opposites[-1]}', 'next_room_id':f"{previous_room}"}
         step = requests.post(f"{api_url}move/", headers=headers, json=data)
         next_move = step.json()
         time.sleep(next_move['cooldown'])
+
         #choose a new room to explore
         other_data = {'direction':f"{exits[-2]}", 'next_room_id':f"{previous_room}"}
         step_2 = requests.post(f"{api_url}move/", headers=headers, json=other_data)
