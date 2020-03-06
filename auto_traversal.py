@@ -16,10 +16,10 @@ headers = {'Authorization': f'Token {token}',
            'Content-Type': 'application/json'}
            
 response = requests.get(url=f"{api_url}init/", headers=headers)
-
+print(f"{response.status_code}")
 initial_room = response.json() #converts to object/dict.
+print(f"initial room = {initial_room['room_id']}\n")
 time.sleep(initial_room['cooldown']) #avoid movement penalty.
-visited.add(initial_room['room_id']) #we've been here.
 stack.append(initial_room) #to start the while loop.
 
 previous_room = None #room_id of prev room for quick lookup.
@@ -29,16 +29,14 @@ last_move_opposite = None #solely for reversing a move.
 while len(visited) < 500:
 
     current_room=stack.pop()
-    print(f"current room: {current_room}")
+    print(f"current room: {current_room}, top of the while loop")
     print(f"{visited}")
 
     if previous_room != None: #any pass other than the first
         print(f"previous_room = {previous_room}")
         
-        #should i be doing the below on current room?
         if len(rooms_dict[current_room['room_id']]['messages']) < 1: #if there are no room messages (this only happens on /init/ calls)
             move = last_move
-            print(f"last_move = {last_move}")
 
             if previous_room in directions:
                 directions[current_room['room_id']][last_move] = current_room
@@ -48,9 +46,9 @@ while len(visited) < 500:
                 print(f"directions entry instantiated = {directions[current_room['room_id']]}")
                 directions[current_room['room_id']][last_move] = current_room
                 print(f"new value added to directions = {directions[current_room['room_id']]}")
+
         else: #you successfully moved.
             movement_message = rooms_dict[current_room['room_id']]['messages'][0]
-            print(f"message in rooms_dict[current_room['room_id']] = {movement_message}")
             
             d = movement_message.split(" ") #split the string
             move = d[-1] #grab the last index
@@ -62,90 +60,92 @@ while len(visited) < 500:
                 directions[previous_room]['w'] = previous_room
             elif move == "east":
                 directions[previous_room]['e'] = previous_room
-            print(f"directions dictionary = {directions}\n") 
+            print(f"\ndirections dictionary = {directions}\n") 
 
     rooms_dict[current_room['room_id']] = current_room #cache the room data
     print(f" \n\n ROOMS_DICT: \n {rooms_dict} \n\n")
 
     exits = current_room['exits']
     opposites = []
-    for i in range(len(exits)):
-        print(f"current path traveled = {traversal_path}")
-        print(f"iteration number: {i+1}")
 
-        #generate opposites
-        if exits[i] == "s":
-            opposites.append("n")
-        elif exits[i] == "n":
-            opposites.append("s")
-        elif exits[i] == "e":
-            opposites.append('w')
-        elif exits[i] == "w":
-            opposites.append('e') 
- 
-        print(f"current_id: {current_room['room_id']}")
-        print(f"previous_id: {previous_room}")
-        print(f"exits: {exits}")
-        print(f"opposites: {opposites}\n")
+    if current_room['room_id'] not in visited:
+        for i in range(len(exits)):
+            print(f"iteration number: {i+1}")
 
-        previous_room = current_room['room_id']
-        print(f"changed previous room to: {previous_room}") #adjusting value for the next loop
-        
-######################################################################################
-#i will need to simplify and adjust everything below this to get a working traversal 
-######################################################################################
+            #generate opposites
+            if exits[i] == "s":
+                opposites.append("n")
+            if exits[i] == "n":
+                opposites.append("s")
+            if exits[i] == "e":
+                opposites.append('w')
+            if exits[i] == "w":
+                opposites.append('e') 
+    
+            print(f"current_id: {current_room['room_id']}")
+            print(f"previous_id: {previous_room}")
+            print(f"exits: {exits}")
+            print(f"opposites: {opposites}\n")
 
-        #move to room and wait
-        payload = {f'direction': f'{exits[i]}'} 
-        print(f"about to move => {payload}")
-        last_move = exits[i]
-        r = requests.post(url=f"{api_url}move/", headers=headers, json=payload)
-        yet_another_room = r.json()
-        print(f"waiting {yet_another_room['cooldown']} seconds")
-        time.sleep(yet_another_room['cooldown'])
-        print(f"\n{r.status_code} {r.reason} \n response cooldown: {yet_another_room['cooldown']}\n new_room: \n {yet_another_room}")
-        
-        #add main room information to directions
-        if current_room["room_id"] in directions:
-            directions[current_room["room_id"]][exits[i]] = yet_another_room["room_id"]
-        else:
-            directions[current_room["room_id"]] = {}
-            directions[current_room["room_id"]][exits[i]] = yet_another_room["room_id"]
+            previous_room = current_room['room_id'] #adjusting value for the next loop
+            
+    ######################################################################################
+    #i will need to simplify and adjust everything below this to get a working traversal 
+    ######################################################################################
 
-        #add side room information to directions
-        if yet_another_room["room_id"] in directions:
-            directions[yet_another_room["room_id"]][opposites[i]] = current_room["room_id"]
-        else:
-            directions[yet_another_room["room_id"]] = {}
-            directions[yet_another_room["room_id"]][opposites[i]] = current_room["room_id"]
+            #move to a side room and wait
+            payload = {f'direction': f'{exits[i]}'} 
+            print(f"\n############### moving to side room => {payload}")
+            last_move = exits[i]
+            r = requests.post(url=f"{api_url}move/", headers=headers, json=payload)
+            yet_another_room = r.json()
+            print(f"id: {yet_another_room['room_id']}")
+            print(f"waiting {yet_another_room['cooldown']} seconds\n")
+            time.sleep(yet_another_room['cooldown'])
+            
+            #add main room information to directions
+            if current_room["room_id"] in directions:
+                directions[current_room["room_id"]][exits[i]] = yet_another_room["room_id"]
+            else:
+                directions[current_room["room_id"]] = {}
+                directions[current_room["room_id"]][exits[i]] = yet_another_room["room_id"]
 
-        #push the new_room onto the stack
-        new_room = yet_another_room
-        room_num = new_room['room_id']
-        rooms_dict[room_num] = new_room
-        print(f"\n rooms_dict post move \n {rooms_dict} \n")
+            #add side room information to directions
+            if yet_another_room["room_id"] in directions:
+                directions[yet_another_room["room_id"]][opposites[i]] = current_room["room_id"]
+            else:
+                directions[yet_another_room["room_id"]] = {}
+                directions[yet_another_room["room_id"]][opposites[i]] = current_room["room_id"]
 
-        #move back
-        payload = {'direction':f'{opposites[i]}', 'next_room_id':f'{previous_room}'}
-        print(f"\nmoving back --> {payload}")
-        post = requests.post(f"{api_url}move/", headers=headers, json=payload)
-        print(f"\nreturned to main room \nresponse= {post.json()}\n")
-        room_num = post.json()['room_id']
-        rooms_dict[room_num] = post.json()
-        last_move = opposites[i]
-        print(f"waiting {post.json()['cooldown']} seconds")
-        time.sleep(post.json()['cooldown'])
+            #push the new_room onto the stack
+            new_room = yet_another_room
+            room_num = new_room['room_id']
+            rooms_dict[room_num] = new_room
 
-    visited.add(previous_room)
-    print(f"added previous room to visted. \n visited= {visited}")
+            #move back
+            payload = {'direction':f'{opposites[i]}', 'next_room_id':f'{previous_room}'}
+            print(f"\n############ moving back --> {payload}")
+            post = requests.post(f"{api_url}move/", headers=headers, json=payload)
+            print(f"back in main room, id: {post.json()['room_id']}")
+            room_num = post.json()['room_id']
+            rooms_dict[room_num] = post.json()
+            last_move = opposites[i]
+            print(f"waiting {post.json()['cooldown']} seconds\n")
+            time.sleep(post.json()['cooldown'])
+
+        visited.add(previous_room)
+        print(f"added main room to visted. \n  visited= {visited}\nmoving to next room...\n")
 
     #move to the next room to be evaluated
-    last_data = {'direction':f'{exits[-1]}'}
-    last_move = exits[-1]
-    traversal_path.append(exits[-1])
-
+    rand = random.randint(0, (len(exits)-1)) #chooses random index
+    rand_selection = exits[rand] #seee?
+    last_data = {'direction':f'{rand_selection}'} #where we're about to move
+    last_move = rand_selection #update last_move, so we can get back
+    traversal_path.append(last_move)
+    
     move_back = requests.post(f"{api_url}move/", headers=headers, json=last_data)
-    print(f"waiting {move_back.json()['cooldown']} seconds")
+    print(f"moved to room {move_back.json()['room_id']}")
+    print(f"waiting {move_back.json()['cooldown']} seconds\n")
     time.sleep(move_back.json()['cooldown'])
     next_room = move_back.json()
     
@@ -153,53 +153,50 @@ while len(visited) < 500:
     if next_room["room_id"] not in visited and len(next_room['exits']) > 1:
         stack.append(next_room)
 
-    #if it has already been evaluated (it's in visited OR exits are less than 2), dont do that.
-    elif len(next_room['exits']) < 2:
-
-        #room is already explored (one exit means we just came from the only door)
+    #if less than one, we've just explored it.
+    if next_room["room_id"] not in visited and len(next_room['exits']) < 2: 
         visited.add(next_room["room_id"])
+        print(f"only one door, updated visited to {visited}")
+
+    #if it has already been evaluated 
+    if next_room["room_id"] in visited:
+        print(f"hallway, backing out.")
+        #room is already explored 
         print_var = next_room["room_id"]
-        print(f"added room {print_var} to visited \nvisited: {visited}\n")
-        
+        print(f"exits to be reversed = {next_room['exits']}")
+        way_back = None
+        if rand_selection == "s":
+            way_back = "n"
+        if rand_selection == "n":
+            way_back = "s" 
+        if rand_selection == "e":
+            way_back = "w"
+        if rand_selection == "w":
+            way_back = "e"
+        print(f'just before moving back to main room. direction outta here = {way_back}\n')
+
         #move back to initial/current_room (the one popped off the stack)
-        data = {'direction':f'{opposites[-1]}', 'next_room_id':f"{previous_room}"}
+        data = {'direction':f'{way_back}', 'next_room_id':f"{previous_room}"}
         step = requests.post(f"{api_url}move/", headers=headers, json=data)
         next_move = step.json()
+        print(f"moved to room {previous_room}")
         print(f"waiting {next_move['cooldown']} seconds")
+        print(f"^^^if this is 20, you messed up.^^^")
         time.sleep(next_move['cooldown'])
 
         #choose a new room to explore
-        other_data = {'direction':f"{exits[-2]}", 'next_room_id':f"{previous_room}"}
+        new_rand = random.randint(0, (len(next_move['exits'])-1))
+        other_data = {'direction':f"{exits[rand]}"}
         step_2 = requests.post(f"{api_url}move/", headers=headers, json=other_data)
         next_try = step_2.json()
 
         #add the new room to the stack and rest
         stack.append(next_try)
-        print(f"waiting {next_try['cooldown']} seconds")
+        print(f"\nchose to explore new room, id: {next_try['room_id']}")
+        print(f"waiting {next_try['cooldown']} seconds\n")
         time.sleep(next_try['cooldown'])
-    
-    elif next_room["room_id"] in visited and len(next_room['exits']) > 1:
-
-        #move back to initial/current_room (the one popped off the stack)
-        data = {'direction':f'{opposites[-1]}', 'next_room_id':f"{previous_room}"}
-        step = requests.post(f"{api_url}move/", headers=headers, json=data)
-        next_move = step.json()
-        print(f"waiting {next_move['cooldown']} seconds")
-        time.sleep(next_move['cooldown'])
-
-        #randomly choose a new room to explore
-        rand = random.randint(0, (len(next_move['exits'])-1))
-        print("randomly selected index", rand)
-        print("randomly selected move", next_move['exits'][rand])
-        other_data = {'direction':f"{next_move['exits'][rand]}"}
-        step_2 = requests.post(f"{api_url}move/", headers=headers, json=other_data)
-        next_try = step_2.json()
         
-        #add the new room to the stack and rest
-        stack.append(next_try)
-        print(f"waiting {next_try['cooldown']} seconds")
-        time.sleep(next_try['cooldown'])
-    print(f"\ndirections: {directions}\n")
+    print(f"bottom of while loop\ndirections: {directions}\nbottom of while loop")
 
 #after the while loop - write the resulting graph to a file.
 with open("graph.txt", mode='r+') as fd:
