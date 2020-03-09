@@ -280,9 +280,9 @@ for i in connections:  #each room evaluated should reset all vars, i is a room I
     if 'w' in connections[room]:
         grid[y_index][(x_index)-1] = "---" #odd X index west
     if 'n' in connections[room]:
-        grid[(y_index)-1][x_index] = " | " #odd Y index north
+        grid[(y_index)+1][x_index] = " | " #odd Y index north
     if 's' in connections[room]:
-        grid[(y_index)+1][x*2] = " | " #odd Y index south
+        grid[(y_index)-1][x_index] = " | " #odd Y index south
 
 #need to trim the map.
 first = 0
