@@ -1,6 +1,7 @@
 connections = {
     112: {'s': 141, 'e': 140, 'w': 100}, 
-    141: {'n': 112, 'e': 156}, 140: {'w': 112}, 
+    141: {'n': 112, 'e': 156}, 
+    140: {'w': 112}, 
     100: {'e': 112, 's': 106, 'w': 68}, 
     106: {'n': 100, 's': 111, 'w': 135}, 
     68: {'e': 100, 'n': 52}, 
@@ -113,7 +114,7 @@ connections = {
     468: {'n': 463}, 
     467: {'n': 399}
     }
-
+# ex 112: {'s': 141, 'e': 140, 'w': 100},
 rooms = {
     112: {'room_id': 112, 'title': 'A misty room', 'description': 'You are standing on grass and surrounded by a dense mist. You can barely make out the exits in any direction.', 'coordinates': '(65,54)', 'elevation': 0, 'terrain': 'NORMAL', 'players': [], 'items': [], 'exits': ['s', 'e', 'w'], 'cooldown': 15.0, 'errors': [], 'messages': ['You have walked north.']}, 
     141: {'room_id': 141, 'title': 'A misty room', 'description': 'You are standing on grass and surrounded by a dense mist. You can barely make out the exits in any direction.', 'coordinates': '(65,53)', 'elevation': 0, 'terrain': 'NORMAL', 'players': [], 'items': [], 'exits': ['n', 'e'], 'cooldown': 15.0, 'errors': [], 'messages': ['You have walked west.']}, 
@@ -230,42 +231,120 @@ rooms = {
     468: {'room_id': 468, 'title': 'A misty room', 'description': 'You are standing on grass and surrounded by a dense mist. You can barely make out the exits in any direction.', 'coordinates': '(67,48)', 'elevation': 0, 'terrain': 'NORMAL', 'players': ['daniel'], 'items': ['great treasure'], 'exits': ['n'], 'cooldown': 15.0, 'errors': [], 'messages': ['You have walked south.']}, 
     467: {'room_id': 467, 'title': "Pirate Ry's", 'description': "You see a sign before you that reads:\n\n'You have found Pirate Ry's. Send a `change_name` request and I'll change your identity to whatever you wish... for a price.'", 'coordinates': '(68,47)', 'elevation': 0, 'terrain': 'NORMAL', 'players': ['[TayBic]'], 'items': ['spectacular treasure'], 'exits': ['n'], 'cooldown': 15.0, 'errors': [], 'messages': ['You have walked south.']}
     }
+#ex 112: {'room_id': 112, 'title': 'A misty room', 'description': 'You are standing on grass and surrounded by a dense mist. You can barely make out the exits in any direction.', 'coordinates': '(65,54)', 'elevation': 0, 'terrain': 'NORMAL', 'players': [], 'items': [], 'exits': ['s', 'e', 'w'], 'cooldown': 15.0, 'errors': [], 'messages': ['You have walked north.']}, 
 
-#100x100 grid should leave enough space
-grid_row = ["X", " "] * 100 
-grid_row_halls = [" "] * 200
+#150x150 grid should leave enough space
+grid_row = ["   "] * 150 #mark a spot a room COULD be.
 grid = []
+coordinate_list = []
 
 #generate map (sans room numbers)
-for x in range(100):
-    grid.append(grid_row)
-    grid.append(grid_row_halls)
+for x in range(150):
+    grid.append(grid_row[:])
 
-#draw the map
-for i in connections:
-    if i in rooms:
-        connections[i]["coordinates"] = rooms[i]['coordinates']
-        #adjust entries by index, for rooms, which should correspond to coordinates.
-        connections[i]["coordinates"] #is a stringified tuple '(68,47)'
-        arr = connections[i]["coordinates"].split(",") #split at the comma // ["(68", "47)"]
-        X = int(arr[0][1:]) #cast to int after pulling out parens
-        Y = int(arr[1][:2])
-        #need to account for spaces.
-            #every other row is made for hall connections
-            
-            #every other column is as well.
+#add coordinate tuples to appropriate connection
 
-        #adjust entries by index, for halls/connections
-        grid[Y][X] = "O"
+for i in connections:  #each room evaluated should reset all vars, i is a room ID in connections
+    x=None
+    y=None
+    room = i
+    arr = []
+    
+    connections[room]["coordinates"] = rooms[room]['coordinates']
+    #adjust entries by index, for rooms, which should correspond to coordinates.
+    #connections[room_var]["coordinates"] is a stringified tuple '(68,47)'
+    arr = connections[room]["coordinates"].split(",") #split at the comma // ["(68", "47)"]
+    #cast to int after pulling out parens
+    x = int(arr[0][1:]) #highest possible X is 73
+    y = int(arr[1][:2]) #highest possible Y is 60
+    connections[room]["coordinates"] = (x, y)
+    coordinate_list.append(connections[room]["coordinates"])
 
-print(f"{'#' * 206}")
-for line in grid:
-    string = " "
-    for item in line:
-        string+= item
-    print("#" + string + "#")
-print(f"{'#' * 206}")
+    #multiplying by 2 ensures only even columns get room #s
+    y_index = y*2 
+    x_index = x*2
+    
+    #literally just print formatting.
+    new_string = ""
+    if len(str(room)) == 3:
+        new_string = str(room)
+    if len(str(room)) == 2:
+        new_string = " " + str(room)
+    if len(str(room)) == 1:
+        new_string = " " + str(room) + " "
+    grid[y_index][x_index] = new_string 
+    
 
-print(f"height of grid = {len(grid)}\nwidth of grid = {len(grid[0])}")
+    if 'e' in connections[room]:
+        grid[y_index][(x_index)+1] = "---" #odd X index east
+    if 'w' in connections[room]:
+        grid[y_index][(x_index)-1] = "---" #odd X index west
+    if 'n' in connections[room]:
+        grid[(y_index)-1][x_index] = " | " #odd Y index north
+    if 's' in connections[room]:
+        grid[(y_index)+1][x*2] = " | " #odd Y index south
 
-        
+#need to trim the map.
+first = 0
+last = 0
+for row in grid:
+    #check how many spaces to shave off
+    count = 0
+    row_index = 0
+    searching = True
+    while searching:
+        if count >= len(row)-1:
+            searching = False
+        if row[count] != "   ":
+            searching = False
+        count+= 1
+
+    if first == 0:
+        first = count
+    else:
+        if count < first:
+            first = count
+
+    #do the same check, except from the end.
+    end_index = len(row)-1
+    end_count = 0 #length from room to end index of the array
+    index_not_found = True
+    while index_not_found:
+        if end_index < 0:
+            index_not_found = False
+        if row[end_index] != "   ":
+            index_not_found = False
+        end_index-= 1
+        end_count+= 1
+
+    if last == 0:
+        last = end_index
+    else:
+        if end_index > last:
+            last = end_index
+for row in grid:
+    y_coord = row[first:last+1]
+    grid[grid.index(row)] = y_coord
+
+kill_it=[]
+for r in range(len(grid)):
+    keep = False
+    for i in range(len(grid[r])):
+        if grid[r][i] != "   ":
+            keep = True
+    if keep == False:
+        kill_it.append(grid[r])
+
+for item in kill_it:        
+    grid.remove(item)
+
+grid.reverse()
+
+with open("ascii_map.txt", mode="r+") as am:
+    for row in grid:
+        print_string = ""
+        for item in row:
+            print_string+= str(item)
+        am.write(print_string + "\n")
+
+        print(print_string)
