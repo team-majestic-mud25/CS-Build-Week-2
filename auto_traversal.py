@@ -725,7 +725,7 @@ while len(visited) < 500:
             move = last_move
 
             if previous_room in directions:
-                directions[current_room['room_id']][last_move] = current_room
+                directions[current_room['room_id']][last_move] = current_room['room_id']
                 print(f"new value added to directions = {directions[current_room['room_id']]}")
             else:
                 directions[current_room['room_id']] = {}
