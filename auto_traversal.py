@@ -6,12 +6,12 @@ import random
 #done. #TODO implement bonuses for every move if the room is in the directions cache. 
 #done. #TODO implement skipping of four-corner searches for every room that is in the visited set. 
 #done. #TODO write a script that takes the result of the traversal and generates an ascii map representation of the graph. 
+#done. (use traversal.py instead of this file) #TODO change this traversal from a "random selection" traversal to either a depth first, or breadth first traversal.
 
-#TODO change this traversal from a "random selection" traversal to either a depth first, or breadth first traversal.
-#TODO once traversal is complete, create a function that returns the shortest path from current_room to target_room.
+#TODO once traversal is complete, create a method that returns the shortest path from current_room to target_room.
+
 
 #rooms_dict, directions and visited are hard coded with rescued values from prints on a run that crashed due to a server 503
-
 #dictionary of room objects
 rooms_dict = {
     112: {'room_id': 112, 'title': 'A misty room', 'description': 'You are standing on grass and surrounded by a dense mist. You can barely make out the exits in any direction.', 'coordinates': '(65,54)', 'elevation': 0, 'terrain': 'NORMAL', 'players': [], 'items': [], 'exits': ['s', 'e', 'w'], 'cooldown': 15.0, 'errors': [], 'messages': ['You have walked north.']}, 
@@ -343,356 +343,49 @@ rooms_dict = {
     403: {'room_id': 403, 'title': 'A misty room', 'description': 'You are standing on grass and surrounded by a dense mist. You can barely make out the exits in any direction.', 'coordinates': '(72,59)', 'elevation': 0, 'terrain': 'NORMAL', 'players': [], 'items': [], 'exits': ['n'], 'cooldown': 15.0, 'errors': [], 'messages': ['You have walked south.']}, 
     421: {'room_id': 421, 'title': 'A misty room', 'description': 'You are standing on grass and surrounded by a dense mist. You can barely make out the exits in any direction.', 'coordinates': '(73,60)', 'elevation': 0, 'terrain': 'NORMAL', 'players': [], 'items': [], 'exits': ['n', 'w'], 'cooldown': 15.0, 'errors': [], 'messages': ['You have walked south.']}, 
     440: {'room_id': 440, 'title': 'A misty room', 'description': 'You are standing on grass and surrounded by a dense mist. You can barely make out the exits in any direction.', 'coordinates': '(73,61)', 'elevation': 0, 'terrain': 'NORMAL', 'players': ['STRAIGHT DmICK DEMERY'], 'items': [], 'exits': ['s', 'w'], 'cooldown': 15.0, 'errors': [], 'messages': ['You have walked north.']}, 
-    476: {'room_id': 476, 'title': 'A misty room', 'description': 'You are standing on grass and surrounded by a dense mist. You can barely make out the exits in any direction.', 'coordinates': '(72,61)', 'elevation': 0, 'terrain': 'NORMAL', 'players': [], 'items': [], 'exits': ['e'], 'cooldown': 15.0, 'errors': [], 'messages': ['You have walked west.']}
-}
+    476: {'room_id': 476, 'title': 'A misty room', 'description': 'You are standing on grass and surrounded by a dense mist. You can barely make out the exits in any direction.', 'coordinates': '(72,61)', 'elevation': 0, 'terrain': 'NORMAL', 'players': [], 'items': [], 'exits': ['e'], 'cooldown': 15.0, 'errors': [], 'messages': ['You have walked west.']},
+    47: {'room_id': 47, 'title': 'A misty room', 'description': 'You are standing on grass and surrounded by a dense mist. You can barely make out the exits in any direction.', 'coordinates': '(58,61)', 'elevation': 0, 'terrain': 'NORMAL', 'players': [], 'items': [], 'exits': ['n', 'e'], 'cooldown': 15.0, 'errors': [], 'messages': ['You have walked south.']}, 
+    61: {'room_id': 61, 'title': 'A misty room', 'description': 'You are standing on grass and surrounded by a dense mist. You can barely make out the exits in any direction.', 'coordinates': '(57,58)', 'elevation': 0, 'terrain': 'NORMAL', 'players': [], 'items': ['spectacular treasure'], 'exits': ['e', 'w'], 'cooldown': 15.0, 'errors': [], 'messages': ['You have walked west.']}, 
+    171: {'room_id': 171, 'title': 'A misty room', 'description': 'You are standing on grass and surrounded by a dense mist. You can barely make out the exits in any direction.', 'coordinates': '(56,58)', 'elevation': 0, 'terrain': 'NORMAL', 'players': [], 'items': [], 'exits': ['e'], 'cooldown': 15.0, 'errors': [], 'messages': ['You have walked west.']}, 
+    343: {'room_id': 343, 'title': 'A misty room', 'description': 'You are standing on grass and surrounded by a dense mist. You can barely make out the exits in any direction.', 'coordinates': '(53,53)', 'elevation': 0, 'terrain': 'NORMAL', 'players': [], 'items': [], 'exits': ['s', 'w'], 'cooldown': 15.0, 'errors': [], 'messages': ['You have walked north.']}, 
+    308: {'room_id': 308, 'title': 'A misty room', 'description': 'You are standing on grass and surrounded by a dense mist. You can barely make out the exits in any direction.', 'coordinates': '(53,51)', 'elevation': 0, 'terrain': 'NORMAL', 'players': ['zach'], 'items': [], 'exits': ['e'], 'cooldown': 15.0, 'errors': [], 'messages': ['You have walked west.']}, 
+    351: {'room_id': 351, 'title': 'A misty room', 'description': 'You are standing on grass and surrounded by a dense mist. You can barely make out the exits in any direction.', 'coordinates': '(52,53)', 'elevation': 0, 'terrain': 'NORMAL', 'players': [], 'items': [], 'exits': ['s', 'e', 'w'], 'cooldown': 15.0, 'errors': [], 'messages': ['You have walked west.']}, 
+    491: {'room_id': 491, 'title': 'A misty room', 'description': 'You are standing on grass and surrounded by a dense mist. You can barely make out the exits in any direction.', 'coordinates': '(52,52)', 'elevation': 0, 'terrain': 'NORMAL', 'players': [], 'items': [], 'exits': ['n'], 'cooldown': 15.0, 'errors': [], 'messages': ['You have walked south.']}, 
+    478: {'room_id': 478, 'title': 'A misty room', 'description': 'You are standing on grass and surrounded by a dense mist. You can barely make out the exits in any direction.', 'coordinates': '(51,53)', 'elevation': 0, 'terrain': 'NORMAL', 'players': [], 'items': [], 'exits': ['e'], 'cooldown': 15.0, 'errors': [], 'messages': ['You have walked west.']}, 
+    71: {'room_id': 71, 'title': 'A misty room', 'description': 'You are standing on grass and surrounded by a dense mist. You can barely make out the exits in any direction.', 'coordinates': '(58,62)', 'elevation': 0, 'terrain': 'NORMAL', 'players': [], 'items': ['spectacular treasure'], 'exits': ['s'], 'cooldown': 15.0, 'errors': [], 'messages': ['You have walked north.']}, 
+    497: {'room_id': 497, 'title': 'A misty room', 'description': 'You are standing on grass and surrounded by a dense mist. You can barely make out the exits in any direction.', 'coordinates': '(50,55)', 'elevation': 0, 'terrain': 'NORMAL', 'players': ['NickTheReaper', 'SNH'], 'items': ['spectacular treasure', 'spectacular treasure'], 'exits': ['e'], 'cooldown': 15.0, 'errors': [], 'messages': ['You have walked west.']}, 
+    490: {'room_id': 490, 'title': 'A misty room', 'description': 'You are standing on grass and surrounded by a dense mist. You can barely make out the exits in any direction.', 'coordinates': '(51,54)', 'elevation': 0, 'terrain': 'NORMAL', 'players': [], 'items': ['spectacular treasure'], 'exits': ['e', 'w'], 'cooldown': 15.0, 'errors': [], 'messages': ['You have walked east.']}, 
+    493: {'room_id': 493, 'title': 'A misty room', 'description': 'You are standing on grass and surrounded by a dense mist. You can barely make out the exits in any direction.', 'coordinates': '(50,54)', 'elevation': 0, 'terrain': 'NORMAL', 'players': [], 'items': ['amazing treasure', 'spectacular treasure'], 'exits': ['e'], 'cooldown': 15.0, 'errors': [], 'messages': ['You have walked west.']}, 
+    292: {'room_id': 292, 'title': 'A misty room', 'description': 'You are standing on grass and surrounded by a dense mist. You can barely make out the exits in any direction.', 'coordinates': '(55,57)', 'elevation': 0, 'terrain': 'NORMAL', 'players': [], 'items': [], 'exits': ['n', 'e'], 'cooldown': 15.0, 'errors': [], 'messages': ['You have walked south.']}, 
+    301: {'room_id': 301, 'title': 'A misty room', 'description': 'You are standing on grass and surrounded by a dense mist. You can barely make out the exits in any direction.', 'coordinates': '(55,58)', 'elevation': 0, 'terrain': 'NORMAL', 'players': [], 'items': [], 'exits': ['n', 's'], 'cooldown': 15.0, 'errors': [], 'messages': ['You have walked north.']}, 
+    304: {'room_id': 304, 'title': 'A misty room', 'description': 'You are standing on grass and surrounded by a dense mist. You can barely make out the exits in any direction.', 'coordinates': '(55,59)', 'elevation': 0, 'terrain': 'NORMAL', 'players': ['dvcolin'], 'items': [], 'exits': ['s'], 'cooldown': 15.0, 'errors': [], 'messages': ['You have walked north.']}, 
+    96: {'room_id': 96, 'title': 'A misty room', 'description': 'You are standing on grass and surrounded by a dense mist. You can barely make out the exits in any direction.', 'coordinates': '(65,56)', 'elevation': 0, 'terrain': 'NORMAL', 'players': [], 'items': [], 'exits': ['n', 'e'], 'cooldown': 15.0, 'errors': [], 'messages': ['You have walked south.']}, 
+    90: {'room_id': 90, 'title': 'A misty room', 'description': 'You are standing on grass and surrounded by a dense mist. You can barely make out the exits in any direction.', 'coordinates': '(66,57)', 'elevation': 0, 'terrain': 'NORMAL', 'players': [], 'items': ['dazzling treasure', 'spectacular treasure'], 'exits': ['e', 'w'], 'cooldown': 15.0, 'errors': [], 'messages': ['You have walked west.']}, 
+    97: {'room_id': 97, 'title': 'A misty room', 'description': 'You are standing on grass and surrounded by a dense mist. You can barely make out the exits in any direction.', 'coordinates': '(66,56)', 'elevation': 0, 'terrain': 'NORMAL', 'players': [], 'items': ['spectacular treasure', 'spectacular treasure', 'spectacular treasure'], 'exits': ['e', 'w'], 'cooldown': 15.0, 'errors': [], 'messages': ['You have walked west.']}, 
+    181: {'room_id': 181, 'title': 'A misty room', 'description': 'You are standing on grass and surrounded by a dense mist. You can barely make out the exits in any direction.', 'coordinates': '(67,56)', 'elevation': 0, 'terrain': 'NORMAL', 'players': [], 'items': ['spectacular treasure', 'amazing treasure'], 'exits': ['w'], 'cooldown': 15.0, 'errors': [], 'messages': ['You have walked east.']}, 
+    178: {'room_id': 178, 'title': 'A misty room', 'description': 'You are standing on grass and surrounded by a dense mist. You can barely make out the exits in any direction.', 'coordinates': '(67,57)', 'elevation': 0, 'terrain': 'NORMAL', 'players': [], 'items': [], 'exits': ['n', 'e', 'w'], 'cooldown': 15.0, 'errors': [], 'messages': ['You have walked south.']}, 
+    209: {'room_id': 209, 'title': 'A misty room', 'description': 'You are standing on grass and surrounded by a dense mist. You can barely make out the exits in any direction.', 'coordinates': '(67,58)', 'elevation': 0, 'terrain': 'NORMAL', 'players': [], 'items': [], 'exits': ['s'], 'cooldown': 15.0, 'errors': [], 'messages': ['You have walked north.']}, 
+    243: {'room_id': 243, 'title': 'A misty room', 'description': 'You are standing on grass and surrounded by a dense mist. You can barely make out the exits in any direction.', 'coordinates': '(68,57)', 'elevation': 0, 'terrain': 'NORMAL', 'players': [], 'items': [], 'exits': ['s', 'e', 'w'], 'cooldown': 15.0, 'errors': [], 'messages': ['You have walked east.']}, 
+    293: {'room_id': 293, 'title': 'A misty room', 'description': 'You are standing on grass and surrounded by a dense mist. You can barely make out the exits in any direction.', 'coordinates': '(68,56)', 'elevation': 0, 'terrain': 'NORMAL', 'players': [], 'items': ['dazzling treasure'], 'exits': ['n'], 'cooldown': 15.0, 'errors': [], 'messages': ['You have walked south.']}, 
+    256: {'room_id': 256, 'title': 'A misty room', 'description': 'You are standing on grass and surrounded by a dense mist. You can barely make out the exits in any direction.', 'coordinates': '(69,57)', 'elevation': 0, 'terrain': 'NORMAL', 'players': [], 'items': ['spectacular treasure'], 'exits': ['s', 'e', 'w'], 'cooldown': 15.0, 'errors': [], 'messages': ['You have walked east.']}, 
+    360: {'room_id': 360, 'title': 'A misty room', 'description': 'You are standing on grass and surrounded by a dense mist. You can barely make out the exits in any direction.', 'coordinates': '(69,56)', 'elevation': 0, 'terrain': 'NORMAL', 'players': [], 'items': ['spectacular treasure'], 'exits': ['n', 'e'], 'cooldown': 15.0, 'errors': [], 'messages': ['You have walked south.']}, 
+    327: {'room_id': 327, 'title': 'A misty room', 'description': 'You are standing on grass and surrounded by a dense mist. You can barely make out the exits in any direction.', 'coordinates': '(70,57)', 'elevation': 0, 'terrain': 'NORMAL', 'players': [], 'items': ['spectacular treasure'], 'exits': ['e', 'w'], 'cooldown': 15.0, 'errors': [], 'messages': ['You have walked east.']}, 
+    427: {'room_id': 427, 'title': 'A misty room', 'description': 'You are standing on grass and surrounded by a dense mist. You can barely make out the exits in any direction.', 'coordinates': '(71,57)', 'elevation': 0, 'terrain': 'NORMAL', 'players': ['Quinn'], 'items': [], 'exits': ['e', 'w'], 'cooldown': 15.0, 'errors': [], 'messages': ['You have walked west.']}, 
+    430: {'room_id': 430, 'title': 'A misty room', 'description': 'You are standing on grass and surrounded by a dense mist. You can barely make out the exits in any direction.', 'coordinates': '(72,57)', 'elevation': 0, 'terrain': 'NORMAL', 'players': [], 'items': [], 'exits': ['n', 'e', 'w'], 'cooldown': 15.0, 'errors': [], 'messages': ['You have walked west.']}, 
+    443: {'room_id': 443, 'title': 'A misty room', 'description': 'You are standing on grass and surrounded by a dense mist. You can barely make out the exits in any direction.', 'coordinates': '(72,58)', 'elevation': 0, 'terrain': 'NORMAL', 'players': [], 'items': [], 'exits': ['s', 'e'], 'cooldown': 15.0, 'errors': [], 'messages': ['You have walked north.']}, 
+    439: {'room_id': 439, 'title': 'A misty room', 'description': 'You are standing on grass and surrounded by a dense mist. You can barely make out the exits in any direction.', 'coordinates': '(73,57)', 'elevation': 0, 'terrain': 'NORMAL', 'players': [], 'items': ['spectacular treasure', 'spectacular treasure', 'spectacular treasure'], 'exits': ['w'], 'cooldown': 15.0, 'errors': [], 'messages': ['You have walked east.']}, 
+    471: {'room_id': 471, 'title': 'A misty room', 'description': 'You are standing on grass and surrounded by a dense mist. You can barely make out the exits in any direction.', 'coordinates': '(73,58)', 'elevation': 0, 'terrain': 'NORMAL', 'players': ['[FrancoisCoding]', 'User 20694'], 'items': ['spectacular treasure'], 'exits': ['w'], 'cooldown': 15.0, 'errors': [], 'messages': ['You have walked east.']},
+    398: {'room_id': 398, 'title': 'A misty room', 'description': 'You are standing on grass and surrounded by a dense mist. You can barely make out the exits in any direction.', 'coordinates': '(70,56)', 'elevation': 0, 'terrain': 'NORMAL', 'players': [], 'items': [], 'exits': ['e', 'w'], 'cooldown': 15.0, 'errors': [], 'messages': ['You have walked west.']}, 
+    438: {'room_id': 438, 'title': 'A misty room', 'description': 'You are standing on grass and surrounded by a dense mist. You can barely make out the exits in any direction.', 'coordinates': '(71,56)', 'elevation': 0, 'terrain': 'NORMAL', 'players': [], 'items': ['dazzling treasure'], 'exits': ['e', 'w'], 'cooldown': 15.0, 'errors': [], 'messages': ['You have walked east.']}, 
+    465: {'room_id': 465, 'title': 'A misty room', 'description': 'You are standing on grass and surrounded by a dense mist. You can barely make out the exits in any direction.', 'coordinates': '(72,56)', 'elevation': 0, 'terrain': 'NORMAL', 'players': [], 'items': [], 'exits': ['e', 'w'], 'cooldown': 15.0, 'errors': [], 'messages': ['You have walked west.']}, 
+    498: {'room_id': 498, 'title': 'A misty room', 'description': 'You are standing on grass and surrounded by a dense mist. You can barely make out the exits in any direction.', 'coordinates': '(73,56)', 'elevation': 0, 'terrain': 'NORMAL', 'players': [], 'items': [], 'exits': ['w'], 'cooldown': 15.0, 'errors': [], 'messages': ['You have walked east.']}, 
+    }
+directions =  {112: {'s': 141, 'e': 140, 'w': 100}, 141: {'n': 112, 'e': 156}, 140: {'w': 112}, 100: {'e': 112, 's': 106, 'w': 68}, 106: {'n': 100, 's': 111, 'w': 135}, 68: {'e': 100, 'n': 52}, 111: {'n': 106, 's': 367, 'e': 158}, 135: {'e': 106, 's': 150}, 150: {'n': 135, 'w': 166}, 166: {'e': 150, 's': 198, 'w': 117}, 198: {'n': 166, 's': 239, 'e': 199}, 117: {'e': 166, 's': 131, 'n': 108, 'w': 133}, 367: {'n': 111}, 158: {'w': 111, 's': 167}, 52: {'s': 68, 'n': 35, 'e': 75}, 35: {'s': 52, 'w': 34}, 75: {'w': 52, 'e': 85}, 85: {'w': 75, 'e': 154}, 156: {'w': 141, 's': 168, 'e': 164}, 168: {'n': 156, 'e': 340}, 164: {'w': 156, 'n': 217, 'e': 298}, 217: {'s': 164, 'e': 247}, 298: {'w': 164, 's': 324}, 247: {'w': 217, 'e': 261}, 324: {'n': 298, 's': 349, 'e': 354}, 340: {'w': 168}, 261: {'w': 247, 's': 277, 'e': 322}, 277: {'n': 261, 'e': 323}, 322: {'w': 261, 'n': 382, 'e': 435}, 382: {'s': 322, 'e': 388}, 435: {'w': 322}, 388: {'w': 382, 'e': 477}, 477: {'w': 388, 'e': 483}, 483: {'w': 477}, 167: {'n': 158, 's': 262, 'e': 260}, 262: {'n': 167, 's': 370, 'e': 358}, 260: {'w': 167}, 370: {'n': 262, 's': 434, 'e': 407}, 358: {'w': 262, 'e': 401}, 401: {'w': 358}, 434: {'n': 370}, 407: {'w': 370, 's': 496}, 496: {'n': 407}, 154: {'w': 85, 'e': 193}, 193: {'w': 154, 'e': 251}, 251: {'w': 193, 'e': 315}, 315: {'w': 251}, 34: {'e': 35, 'n': 14, 's': 50}, 14: {'s': 34, 'e': 37, 'w': 12}, 50: {'n': 34, 's': 89}, 37: {'w': 14}, 12: {'e': 14, 'n': 9, 's': 18, 'w': 21}, 9: {'s': 12, 'n': 3, 'e': 11}, 18: {'n': 12, 's': 22, 'w': 25}, 21: {'e': 12, 'w': 29}, 3: {'s': 9, 'e': 5, 'w': 2}, 11: {'w': 9, 'e': 17}, 5: {'w': 3}, 2: {'e': 3, 'n': 0, 's': 6}, 0: {'s': 2, 'n': 10, 'e': 4, 'w': 1}, 6: {'n': 2, 'w': 7}, 7: {'e': 6, 'n': 8, 'w': 56}, 8: {'s': 7, 'w': 16}, 56: {'e': 7}, 16: {'e': 8, 'n': 58, 'w': 67}, 58: {'s': 16, 'w': 65}, 67: {'e': 16, 'w': 162}, 162: {'e': 67}, 65: {'e': 58, 'n': 74, 'w': 139}, 74: {'s': 65, 'n': 87, 'w': 161}, 139: {'e': 65, 'w': 188}, 188: {'e': 139, 'w': 335}, 87: {'s': 74}, 161: {'e': 74}, 335: {'e': 188, 'w': 366}, 366: {'e': 335}, 89: {'n': 50, 's': 93}, 93: {'n': 89, 'w': 108}, 108: {'e': 93, 's': 117, 'n': 78}, 239: {'n': 198, 'w': 244}, 199: {'w': 198, 's': 230}, 230: {'n': 199, 's': 307, 'e': 297}, 307: {'n': 230, 's': 373, 'e': 371, 'w': 321}, 297: {'w': 230}, 373: {'n': 307, 's': 480}, 371: {'w': 307, 's': 475}, 321: {'e': 307, 's': 413}, 475: {'n': 371, 's': 484}, 484: {'n': 475}, 480: {'n': 373}, 413: {'n': 321}, 244: {'e': 239, 'n': 131}, 131: {'s': 244, 'n': 117, 'w': 138}, 138: {'e': 131, 's': 211, 'w': 195}, 133: {'e': 117, 'w': 173}, 211: {'n': 138}, 195: {'e': 138}, 78: {'s': 108, 'n': 22}, 22: {'s': 78, 'n': 18, 'w': 36}, 323: {'w': 277, 'e': 433}, 433: {'w': 323}, 349: {'n': 324, 's': 352, 'e': 384, 'w': 356}, 354: {'w': 324}, 173: {'e': 133, 'w': 214}, 214: {'e': 173, 'n': 194, 'w': 226}, 352: {'n': 349, 's': 362, 'e': 485}, 384: {'w': 349}, 356: {'e': 349}, 362: {'n': 352, 's': 399, 'w': 463}, 485: {'w': 352}, 399: {'n': 362, 's': 467}, 463: {'e': 362, 's': 468}, 468: {'n': 463}, 467: {'n': 399}, 194: {'s': 214, 'w': 129}, 226: {'e': 214, 's': 300}, 300: {'n': 226, 's': 377, 'w': 389}, 377: {'n': 300}, 389: {'e': 300}, 36: {'e': 22, 's': 48, 'w': 60}, 25: {'e': 18}, 48: {'n': 36, 's': 105, 'w': 149}, 60: {'e': 36, 'n': 45, 'w': 70}, 45: {'s': 60, 'n': 29}, 70: {'e': 60, 's': 163, 'w': 98}, 29: {'s': 45, 'e': 21, 'w': 49}, 49: {'e': 29, 's': 79, 'w': 136}, 79: {'n': 49}, 136: {'e': 49, 'w': 148}, 163: {'n': 70}, 98: {'e': 70, 'n': 102, 's': 126, 'w': 109}, 102: {'s': 98, 'w': 142}, 126: {'n': 98, 's': 129}, 109: {'e': 98, 's': 185, 'w': 175}, 185: {'n': 109}, 175: {'e': 109, 'w': 179, 's': 183}, 129: {'n': 126, 'e': 194, 'w': 170}, 142: {'e': 102, 'w': 159}, 159: {'e': 142, 'w': 196}, 170: {'e': 129}, 148: {'e': 136}, 105: {'n': 48, 'w': 202}, 149: {'e': 48}, 202: {'e': 105}, 420: {'s': 444, 'e': 213, 'w': 437}, 444: {'n': 420}, 213: {'w': 420, 'e': 179}, 437: {'e': 420}, 179: {'w': 213, 's': 233, 'e': 175}, 233: {'n': 179, 'w': 238}, 238: {'e': 233}, 183: {'n': 175, 's': 229}, 229: {'n': 183, 's': 250, 'w': 236}, 250: {'n': 229, 's': 294, 'e': 289}, 236: {'e': 229, 's': 264}, 294: {'n': 250, 's': 334}, 289: {'w': 250}, 334: {'n': 294, 's': 393, 'e': 341, 'w': 391}, 393: {'n': 334, 's': 482}, 341: {'w': 334, 's': 449}, 391: {'e': 334, 's': 396, 'w': 428}, 449: {'n': 341}, 482: {'n': 393}, 396: {'n': 391}, 428: {'e': 391}, 264: {'n': 236, 's': 274, 'w': 273}, 274: {'n': 264}, 273: {'e': 264}, 196: {'e': 159, 'n': 222, 'w': 197}, 222: {'s': 196, 'n': 305}, 197: {'e': 196, 'n': 232, 'w': 276}, 305: {'s': 222, 'n': 365}, 232: {'s': 197, 'n': 272, 'w': 235}, 276: {'e': 197, 'w': 419}, 272: {'s': 232, 'n': 295}, 235: {'e': 232, 'n': 330, 'w': 355}, 295: {'s': 272}, 330: {'s': 235, 'n': 369, 'w': 383}, 355: {'e': 235}, 369: {'s': 330, 'n': 400, 'w': 376}, 383: {'e': 330, 'w': 495}, 495: {'e': 383}, 365: {'s': 305}, 400: {'s': 369}, 376: {'e': 369}, 419: {'e': 276}, 17: {'w': 11, 'n': 24, 'e': 42}, 24: {'s': 17}, 42: {'w': 17, 'n': 44, 's': 80, 'e': 118}, 44: {'s': 42}, 80: {'n': 42, 's': 81, 'e': 86}, 118: {'w': 42, 'e': 137}, 137: {'w': 118}, 81: {'n': 80}, 86: {'w': 80, 'e': 90, 's': 96}, 10: {'s': 0, 'n': 19, 'w': 43}, 4: {'w': 0, 'n': 23, 'e': 13}, 1: {'e': 0}, 23: {'s': 4, 'e': 26}, 13: {'w': 4, 'e': 15}, 26: {'w': 23, 'e': 55}, 15: {'w': 13}, 55: {'w': 26}, 19: {'s': 10, 'n': 20, 'w': 77}, 43: {'e': 10}, 20: {'s': 19, 'n': 63, 'e': 27, 'w': 46}, 77: {'e': 19}, 63: {'s': 20, 'n': 72, 'w': 73}, 27: {'w': 20, 'n': 40, 's': 28, 'e': 30}, 46: {'e': 20, 'w': 62}, 62: {'e': 46, 'n': 64, 'w': 84}, 64: {'s': 62, 'w': 82}, 84: {'e': 62, 'w': 91}, 82: {'e': 64, 'n': 191}, 40: {'s': 27}, 28: {'n': 27}, 30: {'w': 27, 's': 31, 'e': 32}, 31: {'n': 30, 'e': 33}, 32: {'w': 30, 'n': 39, 'e': 54}, 39: {'s': 32, 'n': 53, 'e': 51, 'w': 41}, 54: {'w': 32}, 53: {'s': 39, 'n': 95, 'w': 88}, 51: {'w': 39, 'n': 69, 'e': 57}, 41: {'e': 39}, 69: {'s': 51, 'n': 94, 'e': 103}, 57: {'w': 51, 'e': 145}, 145: {'w': 57, 'n': 174, 'e': 220}, 94: {'s': 69, 'n': 152}, 103: {'w': 69, 'n': 160}, 95: {'s': 53, 'n': 119, 'w': 115}, 88: {'e': 53, 'w': 122}, 122: {'e': 88, 'n': 124}, 160: {'s': 103}, 174: {'s': 145, 'n': 192, 'e': 224}, 220: {'w': 145}, 192: {'s': 174, 'n': 201, 'e': 223}, 224: {'w': 174}, 33: {'w': 31, 'e': 38}, 152: {'s': 94}, 201: {'s': 192}, 223: {'w': 192, 'n': 283}, 283: {'s': 223, 'n': 331, 'e': 313}, 331: {'s': 283, 'e': 446}, 313: {'w': 283}, 446: {'w': 331, 'e': 466}, 466: {'w': 446, 's': 486, 'e': 472}, 486: {'n': 466}, 472: {'w': 466}, 72: {'s': 63, 'w': 76}, 73: {'e': 63}, 76: {'e': 72, 'n': 83, 'w': 110}, 119: {'s': 95, 'n': 134}, 115: {'e': 95}, 134: {'s': 119}, 124: {'s': 122}, 91: {'e': 84, 'n': 180, 's': 101, 'w': 99}, 180: {'s': 91}, 101: {'n': 91, 'w': 113}, 99: {'e': 91, 'n': 190, 'w': 146}, 190: {'s': 99}, 146: {'e': 99, 'n': 215, 's': 177, 'w': 257}, 215: {'s': 146, 'n': 246}, 177: {'n': 146, 'w': 346}, 257: {'e': 146, 'n': 320, 'w': 364}, 113: {'e': 101, 's': 114}, 114: {'n': 113, 'w': 176}, 176: {'e': 114, 'w': 402}, 191: {'s': 82}, 246: {'s': 215}, 346: {'e': 177}, 402: {'e': 176, 'w': 451}, 451: {'e': 402, 'w': 453}, 453: {'e': 451}, 83: {'s': 76, 'e': 130, 'w': 125}, 110: {'e': 76}, 130: {'w': 83}, 125: {'e': 83, 'n': 165, 'w': 237}, 165: {'s': 125}, 237: {'e': 125, 'w': 245}, 245: {'e': 237}, 320: {'s': 257, 'n': 348}, 364: {'e': 257, 'n': 429, 's': 381, 'w': 448}, 348: {'s': 320}, 429: {'s': 364}, 381: {'n': 364, 'w': 394}, 448: {'e': 364}, 394: {'e': 381}, 38: {'w': 33, 's': 59, 'e': 66}, 59: {'n': 38, 's': 104, 'e': 92}, 66: {'w': 38, 'n': 169, 'e': 123}, 104: {'n': 59, 'e': 107}, 92: {'w': 59}, 169: {'s': 66, 'e': 186}, 123: {'w': 66}, 107: {'w': 104, 's': 120, 'e': 121}, 120: {'n': 107, 'e': 127}, 121: {'w': 107, 'n': 128, 'e': 143}, 128: {'s': 121, 'e': 189}, 143: {'w': 121, 'e': 212}, 189: {'w': 128, 'e': 255}, 212: {'w': 143}, 255: {'w': 189}, 186: {'w': 169, 'e': 205}, 205: {'w': 186, 's': 241, 'e': 479}, 241: {'n': 205, 'e': 266}, 479: {'w': 205}, 266: {'w': 241}, 127: {'w': 120, 'e': 184}, 184: {'w': 127, 'e': 221}, 221: {'w': 184, 's': 253, 'e': 240}, 253: {'n': 221, 'e': 258}, 240: {'w': 221, 'n': 249, 'e': 386}, 249: {'s': 240, 'n': 265, 'e': 282}, 386: {'w': 240, 'e': 414}, 414: {'w': 386}, 265: {'s': 249, 'n': 279, 'e': 270}, 282: {'w': 249}, 258: {'w': 253, 'e': 306}, 306: {'w': 258, 'e': 397}, 397: {'w': 306}, 279: {'s': 265}, 270: {'w': 265, 'n': 416, 'e': 338}, 416: {'s': 270}, 338: {'w': 270, 's': 379}, 379: {'n': 338, 'e': 395}, 395: {'w': 379, 's': 403, 'e': 421}, 403: {'n': 395}, 421: {'w': 395, 'n': 440}, 440: {'s': 421, 'w': 476}, 476: {'e': 440}, 427: {'e': 430, 'w': 327}, 430: {'w': 427, 'n': 443, 'e': 439}, 327: {'e': 427, 'w': 256}, 443: {'s': 430, 'e': 471}, 439: {'w': 430}, 471: {'w': 443}, 256: {'e': 327, 's': 360, 'w': 243}, 360: {'n': 256, 'e': 398}, 243: {'e': 256, 's': 293, 'w': 178}, 398: {'w': 360, 'e': 438}, 438: {'w': 398, 'e': 465}, 465: {'w': 438, 'e': 498}, 498: {'w': 465}, 293: {'n': 243}, 178: {'e': 243, 'n': 209, 'w': 90}, 209: {'s': 178}, 90: {'e': 178, 'w': 86}, 96: {'n': 86, 'e': 97}, 97: {'w': 96, 'e': 181}, 181: {'w': 97}}
 
-directions =  {
-    112: {'s': 141, 'e': 140, 'w': 100}, 
-    141: {'n': 112, 'e': 156}, 
-    140: {'w': 112}, 
-    100: {'e': 112, 's': 106, 'w': 68}, 
-    106: {'n': 100, 's': 111, 'w': 135}, 
-    68: {'e': 100, 'n': 52}, 
-    111: {'n': 106, 's': 367, 'e': 158}, 
-    135: {'e': 106, 's': 150}, 
-    150: {'n': 135, 'w': 166}, 
-    166: {'e': 150, 's': 198, 'w': 117}, 
-    198: {'n': 166, 's': 239, 'e': 199}, 
-    117: {'e': 166, 's': 131, 'n': 108, 'w': 133}, 
-    367: {'n': 111}, 
-    158: {'w': 111, 's': 167},
-    52: {'s': 68, 'n': 35, 'e': 75}, 
-    35: {'s': 52, 'w': 34}, 
-    75: {'w': 52, 'e': 85}, 
-    85: {'w': 75, 'e': 154}, 
-    156: {'w': 141, 's': 168, 'e': 164}, 
-    168: {'n': 156, 'e': 340}, 
-    164: {'w': 156, 'n': 217, 'e': 298}, 
-    217: {'s': 164, 'e': 247}, 
-    298: {'w': 164, 's': 324}, 
-    247: {'w': 217, 'e': 261}, 
-    324: {'n': 298, 's': 349, 'e': 354}, 
-    340: {'w': 168}, 
-    261: {'w': 247, 's': 277, 'e': 322}, 
-    277: {'n': 261, 'e': 323}, 
-    322: {'w': 261, 'n': 382, 'e': 435}, 
-    382: {'s': 322, 'e': 388}, 
-    435: {'w': 322}, 
-    388: {'w': 382, 'e': 477}, 
-    477: {'w': 388, 'e': 483}, 
-    483: {'w': 477}, 
-    167: {'n': 158, 's': 262, 'e': 260}, 
-    262: {'n': 167, 's': 370, 'e': 358}, 
-    260: {'w': 167}, 
-    370: {'n': 262, 's': 434, 'e': 407}, 
-    358: {'w': 262, 'e': 401}, 
-    401: {'w': 358}, 
-    434: {'n': 370}, 
-    407: {'w': 370, 's': 496}, 
-    496: {'n': 407}, 
-    154: {'w': 85, 'e': 193}, 
-    193: {'w': 154, 'e': 251}, 
-    251: {'w': 193, 'e': 315}, 
-    315: {'w': 251}, 
-    34: {'e': 35, 'n': 14, 's': 50}, 
-    14: {'s': 34, 'e': 37, 'w': 12}, 
-    50: {'n': 34, 's': 89}, 
-    37: {'w': 14},
-    12: {'e': 14, 'n': 9, 's': 18, 'w': 21}, 
-    9: {'s': 12, 'n': 3, 'e': 11}, 
-    18: {'n': 12, 's': 22, 'w': 25}, 
-    21: {'e': 12, 'w': 29}, 
-    3: {'s': 9, 'e': 5, 'w': 2}, 
-    11: {'w': 9, 'e': 17}, 
-    5: {'w': 3}, 
-    2: {'e': 3, 'n': 0, 's': 6}, 
-    0: {'s': 2, 'n': 10, 'e': 4, 'w': 1}, 
-    6: {'n': 2, 'w': 7}, 
-    7: {'e': 6, 'n': 8, 'w': 56}, 
-    8: {'s': 7, 'w': 16}, 
-    56: {'e': 7}, 
-    16: {'e': 8, 'n': 58, 'w': 67}, 
-    58: {'s': 16, 'w': 65}, 
-    67: {'e': 16, 'w': 162}, 
-    162: {'e': 67}, 
-    65: {'e': 58, 'n': 74, 'w': 139}, 
-    74: {'s': 65, 'n': 87, 'w': 161}, 
-    139: {'e': 65, 'w': 188}, 
-    188: {'e': 139, 'w': 335}, 
-    87: {'s': 74}, 
-    161: {'e': 74},
-    335: {'e': 188, 'w': 366}, 
-    366: {'e': 335}, 
-    89: {'n': 50, 's': 93}, 
-    93: {'n': 89, 'w': 108}, 
-    108: {'e': 93, 's': 117, 'n': 78}, 
-    239: {'n': 198, 'w': 244}, 
-    199: {'w': 198, 's': 230}, 
-    230: {'n': 199, 's': 307, 'e': 297}, 
-    307: {'n': 230, 's': 373, 'e': 371, 'w': 321}, 
-    297: {'w': 230}, 
-    373: {'n': 307, 's': 480}, 
-    371: {'w': 307, 's': 475}, 
-    321: {'e': 307, 's': 413}, 
-    475: {'n': 371, 's': 484}, 
-    484: {'n': 475}, 
-    480: {'n': 373}, 
-    413: {'n': 321}, 
-    244: {'e': 239, 'n': 131}, 
-    131: {'s': 244, 'n': 117, 'w': 138}, 
-    138: {'e': 131, 's': 211, 'w': 195},
-    133: {'e': 117, 'w': 173}, 
-    211: {'n': 138}, 
-    195: {'e': 138}, 
-    78: {'s': 108, 'n': 22}, 
-    22: {'s': 78, 'n': 18, 'w': 36}, 
-    323: {'w': 277, 'e': 433}, 
-    433: {'w': 323}, 
-    349: {'n': 324, 's': 352, 'e': 384, 'w': 356}, 
-    354: {'w': 324}, 
-    173: {'e': 133, 'w': 214}, 
-    214: {'e': 173, 'n': 194, 'w': 226}, 
-    352: {'n': 349, 's': 362, 'e': 485}, 
-    384: {'w': 349}, 
-    356: {'e': 349}, 
-    362: {'n': 352, 's': 399, 'w': 463}, 
-    485: {'w': 352}, 
-    399: {'n': 362, 's': 467}, 
-    463: {'e': 362, 's': 468}, 
-    468: {'n': 463}, 
-    467: {'n': 399}, 
-    194: {'s': 214, 'w': 129}, 
-    226: {'e': 214, 's': 300}, 
-    300: {'n': 226, 's': 377, 'w': 389}, 
-    377: {'n': 300}, 
-    389: {'e': 300}, 
-    36: {'e': 22, 's': 48, 'w': 60}, 
-    25: {'e': 18}, 
-    48: {'n': 36, 's': 105, 'w': 149}, 
-    60: {'e': 36, 'n': 45, 'w': 70}, 
-    45: {'s': 60, 'n': 29}, 
-    70: {'e': 60, 's': 163, 'w': 98}, 
-    29: {'s': 45, 'e': 21, 'w': 49}, 
-    49: {'e': 29, 's': 79, 'w': 136}, 
-    79: {'n': 49}, 
-    136: {'e': 49, 'w': 148}, 
-    163: {'n': 70}, 
-    98: {'e': 70, 'n': 102, 's': 126, 'w': 109}, 
-    102: {'s': 98, 'w': 142}, 
-    126: {'n': 98, 's': 129}, 
-    109: {'e': 98, 's': 185, 'w': 175}, 
-    185: {'n': 109}, 
-    175: {'e': 109, 'w': 179, 's': 183}, 
-    129: {'n': 126, 'e': 194, 'w': 170}, 
-    142: {'e': 102, 'w': 159}, 
-    159: {'e': 142, 'w': 196}, 
-    170: {'e': 129}, 
-    148: {'e': 136}, 
-    105: {'n': 48, 'w': 202}, 
-    149: {'e': 48}, 
-    202: {'e': 105}, 
-    420: {'s': 444, 'e': 213, 'w': 437}, 
-    444: {'n': 420}, 
-    213: {'w': 420, 'e': 179}, 
-    437: {'e': 420}, 
-    179: {'w': 213, 's': 233, 'e': 175}, 
-    233: {'n': 179, 'w': 238}, 
-    238: {'e': 233}, 
-    183: {'n': 175, 's': 229}, 
-    229: {'n': 183, 's': 250, 'w': 236}, 
-    250: {'n': 229, 's': 294, 'e': 289}, 
-    236: {'e': 229, 's': 264}, 
-    294: {'n': 250, 's': 334}, 
-    289: {'w': 250}, 
-    334: {'n': 294, 's': 393, 'e': 341, 'w': 391}, 
-    393: {'n': 334, 's': 482}, 
-    341: {'w': 334, 's': 449}, 
-    391: {'e': 334, 's': 396, 'w': 428}, 
-    449: {'n': 341}, 
-    482: {'n': 393}, 
-    396: {'n': 391}, 
-    428: {'e': 391}, 
-    264: {'n': 236, 's': 274, 'w': 273}, 
-    274: {'n': 264}, 
-    273: {'e': 264}, 
-    196: {'e': 159, 'n': 222, 'w': 197}, 
-    222: {'s': 196, 'n': 305}, 
-    197: {'e': 196, 'n': 232, 'w': 276}, 
-    305: {'s': 222, 'n': 365}, 
-    232: {'s': 197, 'n': 272, 'w': 235}, 
-    276: {'e': 197, 'w': 419}, 
-    272: {'s': 232, 'n': 295}, 
-    235: {'e': 232, 'n': 330, 'w': 355}, 
-    295: {'s': 272}, 
-    330: {'s': 235, 'n': 369, 'w': 383}, 
-    355: {'e': 235}, 
-    369: {'s': 330, 'n': 400, 'w': 376}, 
-    383: {'e': 330, 'w': 495}, 
-    495: {'e': 383}, 
-    365: {'s': 305}, 
-    400: {'s': 369}, 
-    376: {'e': 369}, 
-    419: {'e': 276}, 
-    17: {'w': 11, 'n': 24, 'e': 42}, 
-    24: {'s': 17}, 
-    42: {'w': 17, 'n': 44, 's': 80, 'e': 118}, 
-    44: {'s': 42}, 
-    80: {'n': 42, 's': 81, 'e': 86}, 
-    118: {'w': 42, 'e': 137}, 
-    137: {'w': 118}, 
-    81: {'n': 80}, 
-    86: {'w': 80}, 
-    10: {'s': 0, 'n': 19, 'w': 43}, 
-    4: {'w': 0, 'n': 23, 'e': 13}, 
-    1: {'e': 0}, 
-    23: {'s': 4, 'e': 26}, 
-    13: {'w': 4, 'e': 15}, 
-    26: {'w': 23, 'e': 55}, 
-    15: {'w': 13}, 
-    55: {'w': 26}, 
-    19: {'s': 10, 'n': 20, 'w': 77}, 
-    43: {'e': 10}, 
-    20: {'s': 19, 'n': 63, 'e': 27, 'w': 46}, 
-    77: {'e': 19}, 
-    63: {'s': 20, 'n': 72, 'w': 73}, 
-    27: {'w': 20, 'n': 40, 's': 28, 'e': 30}, 
-    46: {'e': 20, 'w': 62}, 
-    62: {'e': 46, 'n': 64, 'w': 84}, 
-    64: {'s': 62, 'w': 82}, 
-    84: {'e': 62, 'w': 91}, 
-    82: {'e': 64, 'n': 191}, 
-    40: {'s': 27}, 
-    28: {'n': 27}, 
-    30: {'w': 27, 's': 31, 'e': 32}, 
-    31: {'n': 30, 'e': 33}, 
-    32: {'w': 30, 'n': 39, 'e': 54}, 
-    39: {'s': 32, 'n': 53, 'e': 51, 'w': 41}, 
-    54: {'w': 32}, 
-    53: {'s': 39, 'n': 95, 'w': 88}, 
-    51: {'w': 39, 'n': 69, 'e': 57}, 
-    41: {'e': 39}, 
-    69: {'s': 51, 'n': 94, 'e': 103}, 
-    57: {'w': 51, 'e': 145}, 
-    145: {'w': 57, 'n': 174, 'e': 220}, 
-    94: {'s': 69, 'n': 152}, 
-    103: {'w': 69, 'n': 160}, 
-    95: {'s': 53, 'n': 119, 'w': 115}, 
-    88: {'e': 53, 'w': 122}, 
-    122: {'e': 88, 'n': 124}, 
-    160: {'s': 103}, 
-    174: {'s': 145, 'n': 192, 'e': 224}, 
-    220: {'w': 145}, 
-    192: {'s': 174, 'n': 201, 'e': 223}, 
-    224: {'w': 174}, 
-    33: {'w': 31, 'e': 38}, 
-    152: {'s': 94}, 
-    201: {'s': 192}, 
-    223: {'w': 192, 'n': 283}, 
-    283: {'s': 223, 'n': 331, 'e': 313}, 
-    331: {'s': 283, 'e': 446}, 
-    313: {'w': 283}, 
-    446: {'w': 331, 'e': 466}, 
-    466: {'w': 446, 's': 486, 'e': 472}, 
-    486: {'n': 466}, 
-    472: {'w': 466}, 
-    72: {'s': 63, 'w': 76}, 
-    73: {'e': 63}, 
-    76: {'e': 72, 'n': 83, 'w': 110}, 
-    119: {'s': 95, 'n': 134}, 
-    115: {'e': 95}, 
-    134: {'s': 119}, 
-    124: {'s': 122}, 
-    91: {'e': 84, 'n': 180, 's': 101, 'w': 99}, 
-    180: {'s': 91}, 
-    101: {'n': 91, 'w': 113}, 
-    99: {'e': 91, 'n': 190, 'w': 146}, 
-    190: {'s': 99}, 
-    146: {'e': 99, 'n': 215, 's': 177, 'w': 257}, 
-    215: {'s': 146, 'n': 246}, 
-    177: {'n': 146, 'w': 346}, 
-    257: {'e': 146, 'n': 320, 'w': 364}, 
-    113: {'e': 101, 's': 114},
-    114: {'n': 113, 'w': 176}, 
-    176: {'e': 114, 'w': 402}, 
-    191: {'s': 82}, 
-    246: {'s': 215}, 
-    346: {'e': 177}, 
-    402: {'e': 176, 'w': 451}, 
-    451: {'e': 402, 'w': 453}, 
-    453: {'e': 451}, 
-    83: {'s': 76, 'e': 130, 'w': 125}, 
-    110: {'e': 76}, 
-    130: {'w': 83}, 
-    125: {'e': 83, 'n': 165, 'w': 237}, 
-    165: {'s': 125}, 
-    237: {'e': 125, 'w': 245}, 
-    245: {'e': 237}, 
-    320: {'s': 257, 'n': 348}, 
-    364: {'e': 257, 'n': 429, 's': 381, 'w': 448}, 
-    348: {'s': 320}, 
-    429: {'s': 364}, 
-    381: {'n': 364, 'w': 394}, 
-    448: {'e': 364}, 
-    394: {'e': 381}, 
-    38: {'w': 33, 's': 59, 'e': 66}, 
-    59: {'n': 38, 's': 104, 'e': 92}, 
-    66: {'w': 38, 'n': 169, 'e': 123}, 
-    104: {'n': 59, 'e': 107}, 
-    92: {'w': 59}, 
-    169: {'s': 66, 'e': 186}, 
-    123: {'w': 66}, 
-    107: {'w': 104, 's': 120, 'e': 121}, 
-    120: {'n': 107, 'e': 127}, 
-    121: {'w': 107, 'n': 128, 'e': 143}, 
-    128: {'s': 121, 'e': 189}, 
-    143: {'w': 121, 'e': 212}, 
-    189: {'w': 128, 'e': 255}, 
-    212: {'w': 143}, 
-    255: {'w': 189}, 
-    186: {'w': 169, 'e': 205}, 
-    205: {'w': 186, 's': 241, 'e': 479}, 
-    241: {'n': 205, 'e': 266}, 
-    479: {'w': 205}, 
-    266: {'w': 241}, 
-    127: {'w': 120, 'e': 184}, 
-    184: {'w': 127, 'e': 221}, 
-    221: {'w': 184, 's': 253, 'e': 240}, 
-    253: {'n': 221, 'e': 258}, 
-    240: {'w': 221, 'n': 249, 'e': 386}, 
-    249: {'s': 240, 'n': 265, 'e': 282}, 
-    386: {'w': 240, 'e': 414}, 
-    414: {'w': 386}, 
-    265: {'s': 249, 'n': 279, 'e': 270}, 
-    282: {'w': 249}, 
-    258: {'w': 253, 'e': 306}, 
-    306: {'w': 258, 'e': 397}, 
-    397: {'w': 306}, 
-    279: {'s': 265}, 
-    270: {'w': 265, 'n': 416, 'e': 338}, 
-    416: {'s': 270}, 
-    338: {'w': 270, 's': 379}, 
-    379: {'n': 338, 'e': 395}, 
-    395: {'w': 379, 's': 403, 'e': 421}, 
-    403: {'n': 395}, 
-    421: {'w': 395, 'n': 440}, 
-    440: {'s': 421, 'w': 476}, 
-    476: {'e': 440}
-}
 #tracks if we've fully explored a room.
-visited = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 44, 45, 46, 48, 49, 50, 51, 52, 53, 54, 57, 58, 59, 60, 62, 63, 64, 65, 66, 67, 68, 69, 70, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 87, 88, 89, 91, 92, 93, 94, 95, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 117, 118, 119, 120, 121, 122, 123, 125, 126, 127, 128, 129, 131, 133, 135, 136, 137, 138, 139, 140, 141, 142, 143, 145, 146, 149, 150, 152, 154, 156, 158, 159, 160, 161, 162, 163, 164, 166, 167, 168, 169, 173, 174, 175, 176, 177, 179, 180, 183, 184, 185, 186, 188, 189, 190, 191, 192, 193, 194, 196, 197, 198, 199, 201, 202, 205, 211, 212, 213, 214, 215, 217, 220, 221, 222, 223, 224, 226, 229, 230, 232, 233, 235, 236, 237, 238, 239, 240, 241, 244, 246, 247, 249, 250, 251, 253, 255, 257, 258, 260, 261, 262, 264, 265, 266, 270, 272, 276, 277, 279, 282, 283, 289, 294, 295, 297, 298, 300, 305, 306, 307, 313, 315, 320, 321, 322, 323, 324, 330, 331, 334, 335, 338, 340, 341, 346, 348, 349, 352, 354, 355, 356, 358, 362, 364, 365, 366, 367, 369, 370, 371, 373, 376, 377, 379, 381, 382, 383, 384, 386, 388, 389, 391, 393, 394, 395, 396, 397, 399, 400, 401, 402, 407, 413, 414, 416, 419, 420, 421, 428, 429, 434, 435, 440, 446, 448, 449, 451, 463, 466, 467, 468, 472, 475, 476, 477, 479, 480, 482, 483, 484, 485, 495, 496}
+visited = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 44, 45, 46, 48, 49, 50, 51, 52, 53, 54, 57, 58, 59, 60, 62, 63, 64, 65, 66, 67, 68, 69, 70, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 117, 118, 119, 120, 121, 122, 123, 125, 126, 127, 128, 129, 131, 133, 135, 136, 137, 138, 139, 140, 141, 142, 143, 145, 146, 149, 150, 152, 154, 156, 158, 159, 160, 161, 162, 163, 164, 166, 167, 168, 169, 173, 174, 175, 176, 177, 178, 179, 180, 181, 183, 184, 185, 186, 188, 189, 190, 191, 192, 193, 194, 196, 197, 198, 199, 201, 202, 205, 209, 211, 212, 213, 214, 215, 217, 220, 221, 222, 223, 224, 226, 229, 230, 232, 233, 235, 236, 237, 238, 239, 240, 241, 243, 244, 246, 247, 249, 250, 251, 253, 255, 256, 257, 258, 260, 261, 262, 264, 265, 266, 270, 272, 276, 277, 279, 282, 283, 289, 293, 294, 295, 297, 298, 300, 305, 306, 307, 313, 315, 320, 321, 322, 323, 324, 327, 330, 331, 334, 335, 338, 340, 341, 346, 348, 349, 352, 354, 355, 356, 358, 360, 362, 364, 365, 366, 367, 369, 370, 371, 373, 376, 377, 379, 381, 382, 383, 384, 386, 388, 389, 391, 393, 394, 395, 396, 397, 398, 399, 400, 401, 402, 407, 413, 414, 416, 419, 420, 421, 427, 428, 429, 430, 434, 435, 438, 439, 440, 443, 446, 448, 449, 451, 463, 465, 466, 467, 468, 471, 472, 475, 476, 477, 479, 480, 482, 483, 484, 485, 495, 496, 498}
 traversal_path = [] #path taken from last root node
 stack = [] #to track untraveled rooms
-
-#check for wise explorer bonus
-def check_bonus(room, move, directions, payload):
-    #if the current room, in directions, has a key for the move we're making
-    if room['room_id'] in directions:
-        if move in directions[room['room_id']]:
-                payload['directions'] = directions[room['room_id']][move]
-                return
-    else:
-        return    
-    #add a ['directions'] key to the request's payload with the value
 
 # makes init request, saves the first return object to initial_room
 api_url = "https://lambda-treasure-hunt.herokuapp.com/api/adv/"
@@ -714,24 +407,28 @@ last_move_opposite = None #solely for reversing a move.
 while len(visited) < 500:
 
     current_room=stack.pop()
-    print(f"current room: {current_room}, top of the while loop")
-    print(f"{visited}")
-    print(f"{len(visited)} rooms explored. {500 - len(visited)} left to discover")
+    #printing out vars for reference in the event of a server crash, spits out a huge text wall.
+    #should i write to files here?
+    print(f"\nvisited: {visited}\n")
+    print(f"room dict: {rooms_dict}\n")
+    print(f"directions: {directions}\n")
+
+    print(f"top of the while loop. current room= {current_room['room_id']}")
+    print(f"\n{len(visited)} rooms explored. {500 - len(visited)} left to discover \n")
 
     if previous_room != None: #any pass other than the first
-        print(f"previous_room = {previous_room}")
-        
+
         if len(rooms_dict[current_room['room_id']]['messages']) < 1: #if there are no room messages (this only happens on /init/ calls)
             move = last_move
 
             if previous_room in directions:
                 directions[current_room['room_id']][last_move] = current_room['room_id']
-                print(f"new value added to directions = {directions[current_room['room_id']]}")
+                print(f"new value added to directions = {current_room['room_id']} : {directions[current_room['room_id']]}\n")
             else:
                 directions[current_room['room_id']] = {}
                 print(f"directions entry instantiated = {directions[current_room['room_id']]}")
                 directions[current_room['room_id']][last_move] = current_room
-                print(f"new value added to directions = {directions[current_room['room_id']]}")
+                print(f"new value added to directions = {current_room['room_id']} : {directions[current_room['room_id']]}\n")
 
         else: #you successfully moved.
             movement_message = rooms_dict[current_room['room_id']]['messages'][0]
@@ -746,17 +443,17 @@ while len(visited) < 500:
                 directions[previous_room]['w'] = previous_room
             elif move == "east":
                 directions[previous_room]['e'] = previous_room
-            print(f"\ndirections dictionary = {directions}\n") 
 
     rooms_dict[current_room['room_id']] = current_room #cache the room data
-    print(f" \n\n ROOMS_DICT: \n {rooms_dict} \n\n")
 
     exits = current_room['exits']
     opposites = []
 
+    last_visited = previous_room
     previous_room = current_room['room_id'] #adjusting value for the next loop
 
     if current_room['room_id'] not in visited:
+        print(f"exploring all side rooms")
         for i in range(len(exits)):
             print(f"iteration number: {i+1}")
 
@@ -776,10 +473,16 @@ while len(visited) < 500:
 
             #move to a side room and wait
             payload = {f'direction': f'{exits[i]}'} 
-            check_bonus(current_room, exits[i], directions, payload)
+
+            #check_bonus(current_room, exits[i], directions, payload)
+            if current_room['room_id'] in directions:
+                if exits[i] in directions[current_room['room_id']]:
+                    payload['next_room_id'] = f"{directions[current_room['room_id']][exits[i]]}"
+
             print(f"\n############### moving to side room => {payload}")
             last_move = exits[i]
             r = requests.post(url=f"{api_url}move/", headers=headers, json=payload)
+            print(r.status_code)
             yet_another_room = r.json()
             print(f"id: {yet_another_room['room_id']}")
             print(f"waiting {yet_another_room['cooldown']} seconds\n")
@@ -806,9 +509,14 @@ while len(visited) < 500:
 
             #move back
             payload = {'direction':f'{opposites[i]}', 'next_room_id':f'{previous_room}'}
-            check_bonus(new_room, opposites[i], directions, payload)
+            #check_bonus(new_room, opposites[i], directions, payload)
+            if new_room['room_id'] in directions:
+                if opposites[i] in directions[new_room['room_id']]:
+                    payload['next_room_id'] = f"{directions[new_room['room_id']][opposites[i]]}"    
+
             print(f"\n############ moving back --> {payload}")
             post = requests.post(f"{api_url}move/", headers=headers, json=payload)
+            print(post.status_code)
             print(f"back in main room, id: {post.json()['room_id']}")
             room_num = post.json()['room_id']
             rooms_dict[room_num] = post.json()
@@ -823,11 +531,25 @@ while len(visited) < 500:
     rand = random.randint(0, (len(exits)-1)) #chooses random index
     rand_selection = exits[rand] #seee?
     last_data = {'direction':f'{rand_selection}'} #where we're about to move
-    check_bonus(current_room, rand_selection, directions, last_data)
+
+    #if there is more than one exit, and our randomly selected move matches last_visited, choose a new random.
+    if len(exits) > 1 and directions[current_room['room_id']][rand_selection] == last_visited:
+        temp = rand
+        while temp == rand:
+            rand = random.randint(0, (len(exits)-1))
+        rand_selection = exits[rand]
+        last_data = {'direction':f'{rand_selection}'}
+
+    # check_bonus(current_room, rand_selection, directions, last_data)
+    if current_room['room_id'] in directions:
+        if rand_selection in directions[current_room['room_id']]:
+            last_data['next_room_id'] = f"{directions[current_room['room_id']][rand_selection]}"
+
     last_move = rand_selection #update last_move, so we can get back
-    traversal_path.append(last_move)
+    traversal_path.append(last_move) 
     
     move_back = requests.post(f"{api_url}move/", headers=headers, json=last_data)
+    print(move_back.status_code)
     print(f"moved to room {move_back.json()['room_id']}")
     print(f"waiting {move_back.json()['cooldown']} seconds\n")
     time.sleep(move_back.json()['cooldown'])
@@ -844,10 +566,8 @@ while len(visited) < 500:
 
     #if it has already been evaluated 
     if next_room["room_id"] in visited:
-        print(f"hallway, backing out.")
         #room is already explored 
         print_var = next_room["room_id"]
-        print(f"exits to be reversed = {next_room['exits']}")
         way_back = None
         if rand_selection == "s":
             way_back = "n"
@@ -857,30 +577,44 @@ while len(visited) < 500:
             way_back = "w"
         if rand_selection == "w":
             way_back = "e"
-        print(f'just before moving back to main room. direction outta here = {way_back}\n')
 
         #move back to initial/current_room (the one popped off the stack)
         data = {'direction':f'{way_back}', 'next_room_id':f"{previous_room}"}
+
         step = requests.post(f"{api_url}move/", headers=headers, json=data)
+        print(step.status_code)
         next_move = step.json()
         print(f"moved to room {next_move['room_id']}")
-        print(f"waiting {next_move['cooldown']} seconds")
+        print(f"waiting {next_move['cooldown']} seconds\n")
         time.sleep(next_move['cooldown'])
 
         #choose a new room to explore
         new_rand = random.randint(0, (len(next_move['exits'])-1))
-        other_data = {'direction':f"{exits[rand]}"}
-        check_bonus(next_move, exits[rand], directions, other_data)
+        other_data = {'direction':f"{exits[new_rand]}"}
+
+        #if there is more than one exit, and our randomly selected move matches last_visited, choose a new random.
+        if len(next_move['exits']) > 1 and directions[next_move['room_id']][exits[rand]] == last_visited:
+            temp = new_rand
+            while temp == new_rand:
+                new_rand = random.randint(0, (len(exits)-1))
+            other_data = {'direction':f"{exits[new_rand]}"}
+
+        #check_bonus(next_move, exits[rand], directions, other_data)
+        if next_move['room_id'] in directions:
+            if exits[new_rand] in directions[next_move['room_id']]:
+                other_data['next_room_id'] = f"{directions[next_move['room_id']][exits[new_rand]]}"
+
         step_2 = requests.post(f"{api_url}move/", headers=headers, json=other_data)
+        print(step_2.status_code)
         next_try = step_2.json()
 
         #add the new room to the stack and rest
         stack.append(next_try)
-        print(f"\nchose to explore new room, id: {next_try['room_id']}")
+        print(f"moved to room {next_try['room_id']}")
         print(f"waiting {next_try['cooldown']} seconds\n")
         time.sleep(next_try['cooldown'])
         
-    print(f"bottom of while loop\ndirections: {directions}\nbottom of while loop")
+    print(f"restarting the while loop.\n")
 
 #after the while loop - write the resulting graph to a file.
 with open("graph.txt", mode='r+') as fd:
