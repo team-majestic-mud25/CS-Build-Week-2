@@ -41,7 +41,7 @@ class Graph:
         store each vertex in self.connections
         beginning from the initial room.
         TODO - pull move requests out to a method.
-        TODO - pull bonus check out to a method.
+        TODO - skip previously explored rooms.
         """
         print("DFT CALLED")
         #BASE CASE: when we've explored every adjacent room, return up the chain
@@ -71,7 +71,7 @@ class Graph:
             print(r.status_code, r)
             side_room = r.json()
             self.connections[current_room['room_id']][direction] = side_room['room_id']
-            print(f'moved to side room: {side_room["room_id"]}\nwaiting {side_room["cooldown"]}secs')
+            print(f'moved to side room: {side_room["room_id"]}\nwaiting {side_room["cooldown"]}secs\n')
             time.sleep(side_room['cooldown'])
 
             if side_room['room_id'] not in visited:
@@ -108,7 +108,7 @@ class Graph:
             r = requests.post(url=f"{api_url}move/", headers=headers, json=payload)
             print(r.status_code)
             main_again= r.json()
-            print(f"back in main room: {main_again['room_id']}\ncooldown {main_again['cooldown']}secs")
+            print(f"back in main room: {main_again['room_id']}\ncooldown {main_again['cooldown']}secs\n")
             time.sleep(main_again['cooldown'])
 
     #TODO implement a bfs for finding shortest path.
