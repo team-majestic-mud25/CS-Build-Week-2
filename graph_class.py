@@ -1,4 +1,5 @@
 from util import Queue, Stack
+from ast import literal_eval
 import requests
 import json
 import time
@@ -60,7 +61,7 @@ class Graph:
             #move request to side room, 
             payload = {f'direction': f'{direction}'}
 
-            # check_bonus(current_room, exits[i], directions, payload)
+            # check_bonus(self, current_room, exits[i], directions, payload)
             if current_room['room_id'] in self.connections:
                 if direction in self.connections[current_room['room_id']]:
                     payload['next_room_id'] = f"{self.connections[current_room['room_id']][direction]}"
@@ -85,6 +86,7 @@ class Graph:
                 self.connections[side_room['room_id']] = {}
             
             opposite_move = ""
+
             #adds opposite direction to self.connections if it doesnt already exist
             if direction == "n":
                 opposite_move = "s"
@@ -111,44 +113,43 @@ class Graph:
             print(f"back in main room: {main_again['room_id']}\ncooldown {main_again['cooldown']}secs\n")
             time.sleep(main_again['cooldown'])
 
-    #TODO implement a bfs for finding shortest path.
-    # def bfs(self, starting_vertex, destination_vertex):
-    #     """
-    #     Return a list containing the shortest path from
-    #     starting_vertex to destination_vertex in
-    #     breath-first order.
-    #     """
-    #      #instantiate queue and define starting vertex. 
-    #     q = Queue()
-    #     q.enqueue(starting_vertex)
-    #     #create a way to track visted vertices.
-    #     visited = []
-    #     #create a way to track the overall path
-    #     current_path = {
-    #         starting_vertex: '1',
-    #     }
-    #     print(f"breadth first search")
-    #     while q.size() > 0:
-    #         #pop current node off the queue and add it to visited
-    #         current_node = q.dequeue()
-    #         #are we done searching?
-    #         if current_node == destination_vertex:
-    #             #start with an empty string
-    #             path = f''
-    #             #loop through the current path and generate overall path
-    #             while current_path.get(current_node) is not '1':
-    #                 path = f'{current_node} {path}'
-    #                 current_node = current_path.get(current_node)
-    #             #return the result
-    #             return f'{starting_vertex} {path}'
-    #         #if not done searching,
-    #         else:
-    #             #check the node for neighbors.
-    #             for i in self.get_neighbors(current_node):
-    #                 #enqueue the neighbors, assuming we havent visited
-    #                 if i not in visited:
-    #                     q.enqueue(i)
-    #                     visited.append(i)
-    #                 #if you havent reached the end or the target, mark your progress
-    #                 if not current_path.get(i):
-    #                     current_path[i] = current_node
+    def bfs(self, starting_room_id, destination_room_id):
+        """
+        Return a list containing the shortest path from
+        starting_room_id to destination_room_id 
+        """
+
+        with open("graph.txt", mode='r+') as dd:
+            connections = literal_eval(dd.read())
+        self.connections = connections
+
+        #create a way to track visted vertices.
+        visited = set()
+        
+        #create a way to track the overall path.
+        current_path = []
+
+        #instantiate queue and define starting vertex. 
+        q = Queue()
+        q.enqueue((starting_room_id, current_path))
+
+        while q.size() > 0:
+            #pop current node off the queue and add it to visited.
+            toople = q.dequeue()
+            current_node = toople[0]
+            path_so_far = toople[1]
+            visited.add(current_node)
+
+            #are we done searching?
+            if current_node == destination_room_id:
+                return path_so_far[1:]
+
+            #if not done searching,
+            else:
+                #check the node for neighbors.
+                for i in self.connections[current_node]:
+                    path = path_so_far[:]
+                    #enqueue the neighbors, assuming we havent visited
+                    if self.connections[current_node][i] not in visited:
+                        path.append(i)
+                        q.enqueue((self.connections[current_node][i], path))
