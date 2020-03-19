@@ -142,7 +142,7 @@ class Graph:
 
             #are we done searching?
             if current_node == destination_room_id:
-                return path_so_far[1:]
+                return path_so_far[:]
 
             #if not done searching,
             else:
